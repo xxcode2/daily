@@ -140,28 +140,65 @@ function drawBarChart(divData) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const maxVal = Math.max(...divData.map(d => d.reguler + d.project + d.additional), 1);
-    const barW = 50, gap = (canvas.width - barW * divData.length) / (divData.length + 1);
-    const chartH = 180, offsetY = 10;
+    // Round up max to nearest nice number for Y-axis
+    const niceMax = Math.ceil(maxVal / 2) * 2; // always even number
+    const leftPad = 35;
+    const barAreaWidth = canvas.width - leftPad - 10;
+    const barW = 55;
+    const gap = (barAreaWidth - barW * divData.length) / (divData.length + 1);
+    const chartH = 165;
+    const topPad = 25;
+    const bottomPad = 25;
 
+    // Draw Y-axis grid lines & labels (integers only)
+    const ySteps = Math.min(niceMax, 5);
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#888';
+    ctx.font = '600 10px Poppins';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i <= ySteps; i++) {
+        const val = Math.round((niceMax / ySteps) * i);
+        const yPos = topPad + chartH - (val / niceMax) * chartH;
+        // Grid line
+        ctx.beginPath();
+        ctx.moveTo(leftPad, yPos);
+        ctx.lineTo(canvas.width - 10, yPos);
+        ctx.stroke();
+        // Label
+        ctx.fillText(val, leftPad - 5, yPos);
+    }
+
+    // Draw bars
+    ctx.textAlign = 'center';
     divData.forEach((d, i) => {
-        const x = gap + i * (barW + gap);
-        const totalH = ((d.reguler + d.project + d.additional) / maxVal) * chartH;
-        let y = offsetY + chartH - totalH;
-
-        const rH = (d.reguler / maxVal) * chartH;
-        ctx.fillStyle = '#c0392b'; ctx.fillRect(x, y, barW, rH); y += rH;
-        const pH = (d.project / maxVal) * chartH;
-        ctx.fillStyle = '#27ae60'; ctx.fillRect(x, y, barW, pH); y += pH;
-        const aH = (d.additional / maxVal) * chartH;
-        ctx.fillStyle = '#f39c12'; ctx.fillRect(x, y, barW, aH);
-
-        ctx.fillStyle = '#333'; ctx.font = '600 11px Poppins'; ctx.textAlign = 'center';
-        ctx.fillText(d.name, x + barW / 2, offsetY + chartH + 15);
-
+        const x = leftPad + gap + i * (barW + gap);
         const totalAct = d.reguler + d.project + d.additional;
+        const totalH = (totalAct / niceMax) * chartH;
+        let y = topPad + chartH - totalH;
+
+        // Reguler bar
+        const rH = (d.reguler / niceMax) * chartH;
+        if (rH > 0) { ctx.fillStyle = '#c0392b'; ctx.fillRect(x, y, barW, rH); y += rH; }
+        // Project bar
+        const pH = (d.project / niceMax) * chartH;
+        if (pH > 0) { ctx.fillStyle = '#27ae60'; ctx.fillRect(x, y, barW, pH); y += pH; }
+        // Additional bar
+        const aH = (d.additional / niceMax) * chartH;
+        if (aH > 0) { ctx.fillStyle = '#f39c12'; ctx.fillRect(x, y, barW, aH); }
+
+        // Department name label
+        ctx.fillStyle = '#333';
+        ctx.font = '600 11px Poppins';
+        ctx.fillText(d.name, x + barW / 2, topPad + chartH + bottomPad - 8);
+
+        // Total value on top of bar
         if (totalAct > 0) {
-            ctx.fillStyle = '#555'; ctx.font = 'bold 11px Poppins';
-            ctx.fillText(totalAct, x + barW / 2, offsetY + chartH - totalH - 5);
+            ctx.fillStyle = '#1a1a2e';
+            ctx.font = 'bold 12px Poppins';
+            ctx.fillText(totalAct, x + barW / 2, topPad + chartH - totalH - 8);
         }
     });
 }
@@ -383,47 +420,55 @@ function saveCurrentPage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
+    // Save original styles
     const origStyle = el.style.cssText;
-    el.style.width = '1400px';
-    el.style.height = 'auto';
-    el.style.overflow = 'visible';
+    const allChildren = el.querySelectorAll('*');
+    const origChildStyles = [];
+    allChildren.forEach(child => origChildStyles.push(child.style.cssText));
+
+    // Force desktop width and remove all overflow constraints
+    el.style.cssText = 'width:1400px;height:auto;overflow:visible;position:relative;padding:35px;';
+    allChildren.forEach(child => {
+        child.style.overflow = 'visible';
+        child.style.maxHeight = 'none';
+    });
 
     setTimeout(() => {
+        const captureW = el.scrollWidth;
+        const captureH = el.scrollHeight;
+
         html2canvas(el, {
-            scale: 2, useCORS: true, backgroundColor: '#dfe6ed', logging: false,
-            width: el.scrollWidth, height: el.scrollHeight,
-            windowWidth: el.scrollWidth + 50, windowHeight: el.scrollHeight + 50
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            width: captureW,
+            height: captureH,
+            windowWidth: captureW,
+            windowHeight: captureH
         }).then(captured => {
+            // Restore all styles
             el.style.cssText = origStyle;
+            allChildren.forEach((child, i) => { child.style.cssText = origChildStyles[i]; });
 
-            const ratio = 16 / 9;
-            const srcW = captured.width, srcH = captured.height;
-            let outW, outH;
-            if (srcW / srcH >= ratio) { outW = srcW; outH = Math.round(srcW / ratio); }
-            else { outH = srcH; outW = Math.round(srcH * ratio); }
-            if (outW < 1920) { const s = 1920 / outW; outW = 1920; outH = Math.round(outH * s); }
-
-            const final = document.createElement('canvas');
-            final.width = outW; final.height = outH;
-            const ctx = final.getContext('2d');
-            ctx.fillStyle = '#dfe6ed';
-            ctx.fillRect(0, 0, outW, outH);
-
-            const scale = Math.min(outW / srcW, outH / srcH);
-            const dW = srcW * scale, dH = srcH * scale;
-            ctx.drawImage(captured, (outW - dW) / 2, (outH - dH) / 2, dW, dH);
-
+            // Download directly - no resizing, no 16:9 forcing
             const link = document.createElement('a');
             const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
             const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
-            if (format === 'png') { link.download = fn + '.png'; link.href = final.toDataURL('image/png'); }
-            else { link.download = fn + '.jpg'; link.href = final.toDataURL('image/jpeg', 0.95); }
+            if (format === 'png') {
+                link.download = fn + '.png';
+                link.href = captured.toDataURL('image/png');
+            } else {
+                link.download = fn + '.jpg';
+                link.href = captured.toDataURL('image/jpeg', 0.95);
+            }
             link.click();
             btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
             el.style.cssText = origStyle;
+            allChildren.forEach((child, i) => { child.style.cssText = origChildStyles[i]; });
             alert('Gagal menyimpan.'); console.error(err);
             btn.innerHTML = orig; btn.disabled = false;
         });
-    }, 100);
+    }, 300);
 }
