@@ -149,3 +149,96 @@ body { font-family: 'Poppins', sans-serif; background: #e8ecf0; color: #333; min
 .leg-a { background: #fef9e7; color: #f39c12; }
 
 @media (max-width: 1300px) { .report-body-p2 { flex-direction: column; } .activity-stats-output { width: 100%; } }
+
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+/* Form animations */
+.form-title { animation: fadeInUp 0.6s ease-out; }
+.date-input { animation: fadeInUp 0.6s ease-out 0.1s both; }
+.division-form { animation: fadeInUp 0.5s ease-out both; }
+.division-form:nth-child(3) { animation-delay: 0.1s; }
+.division-form:nth-child(4) { animation-delay: 0.15s; }
+.division-form:nth-child(5) { animation-delay: 0.2s; }
+.division-form:nth-child(6) { animation-delay: 0.25s; }
+.division-form:nth-child(7) { animation-delay: 0.3s; }
+.notes-form { animation: fadeInUp 0.5s ease-out 0.35s both; }
+.btn-generate { animation: fadeInUp 0.5s ease-out 0.4s both; }
+.btn-generate:active { animation: pulse 0.3s ease; }
+
+/* Division header hover effect */
+.division-header { transition: filter 0.2s; }
+.division-header:hover { filter: brightness(1.1); }
+
+/* Activity row animation */
+.activity-row { animation: slideDown 0.3s ease-out; transition: background 0.2s; }
+.activity-row:hover { background: #f8fafe; border-radius: 8px; }
+
+/* Report section animations */
+.page-tabs { animation: fadeIn 0.4s ease-out; }
+.report-container { animation: scaleIn 0.5s ease-out; }
+.report-header h1 { animation: fadeInUp 0.5s ease-out 0.2s both; }
+.panel { animation: fadeInUp 0.5s ease-out both; }
+.panel-left { animation-delay: 0.3s; }
+.panel-right { animation-delay: 0.4s; }
+.dept-card { animation: fadeInUp 0.4s ease-out both; transition: transform 0.25s, box-shadow 0.25s; }
+.dept-card:nth-child(1) { animation-delay: 0.5s; }
+.dept-card:nth-child(2) { animation-delay: 0.55s; }
+.dept-card:nth-child(3) { animation-delay: 0.6s; }
+.dept-card:nth-child(4) { animation-delay: 0.65s; }
+.dept-card:nth-child(5) { animation-delay: 0.7s; }
+.dept-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+
+/* Tab buttons transition */
+.tab-btn { transition: all 0.3s ease; }
+.tab-btn.active { transform: translateY(-2px); }
+
+/* Action buttons */
+.action-btn { transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+.action-btn:active { transform: scale(0.95); }
+
+/* Page 2 card animations */
+.div-activity-card { animation: fadeInUp 0.4s ease-out both; transition: transform 0.2s, box-shadow 0.2s; }
+.div-activity-card:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.div-activity-card:nth-child(1) { animation-delay: 0.1s; }
+.div-activity-card:nth-child(2) { animation-delay: 0.2s; }
+.div-activity-card:nth-child(3) { animation-delay: 0.3s; }
+.div-activity-card:nth-child(4) { animation-delay: 0.4s; }
+.div-activity-card:nth-child(5) { animation-delay: 0.5s; }
+
+/* Smooth page transitions */
+.report-page { transition: opacity 0.3s ease; }
+
+/* Tooltip-like hover on badge */
+.badge-p2, .dept-card-tag { transition: transform 0.2s; }
+.badge-p2:hover, .dept-card-tag:hover { transform: scale(1.1); }
+
+/* Focus glow on inputs */
+input:focus, select:focus, textarea:focus { transition: all 0.3s ease; }
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
