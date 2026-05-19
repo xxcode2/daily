@@ -211,6 +211,76 @@ function drawPieChart(reguler, project, additional, total) {
     ctx.stroke();
 }
 
+// Save report as PNG or JPG in 16:9 ratio (1920x1080)
+function saveAsImage(format) {
+    const reportContainer = document.getElementById('report-container');
+    
+    // Show loading indicator
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Processing...';
+    btn.disabled = true;
+
+    html2canvas(reportContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: reportContainer.scrollWidth,
+        height: reportContainer.scrollHeight
+    }).then(capturedCanvas => {
+        // Create 16:9 canvas (1920x1080)
+        const outputWidth = 1920;
+        const outputHeight = 1080;
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = outputWidth;
+        finalCanvas.height = outputHeight;
+        const ctx = finalCanvas.getContext('2d');
+
+        // Fill white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, outputWidth, outputHeight);
+
+        // Scale captured content to fit 16:9 while maintaining aspect ratio
+        const srcWidth = capturedCanvas.width;
+        const srcHeight = capturedCanvas.height;
+        const scaleX = outputWidth / srcWidth;
+        const scaleY = outputHeight / srcHeight;
+        const scale = Math.min(scaleX, scaleY);
+
+        const drawWidth = srcWidth * scale;
+        const drawHeight = srcHeight * scale;
+        const offsetX = (outputWidth - drawWidth) / 2;
+        const offsetY = (outputHeight - drawHeight) / 2;
+
+        ctx.drawImage(capturedCanvas, offsetX, offsetY, drawWidth, drawHeight);
+
+        // Download
+        const link = document.createElement('a');
+        const dateVal = document.getElementById('activity-date').value;
+        const fileName = `Daily_Activity_GA_${dateVal}`;
+
+        if (format === 'png') {
+            link.download = `${fileName}.png`;
+            link.href = finalCanvas.toDataURL('image/png');
+        } else {
+            link.download = `${fileName}.jpg`;
+            link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
+        }
+
+        link.click();
+
+        // Reset button
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }).catch(err => {
+        alert('Gagal menyimpan gambar. Coba lagi.');
+        console.error(err);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
 // Go back to form
 function goBack() {
     document.getElementById('form-section').style.display = 'block';
