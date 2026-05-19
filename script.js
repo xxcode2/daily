@@ -420,18 +420,35 @@ function saveCurrentPage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
+    // Save original styles of container and all child elements
     const origStyle = el.style.cssText;
+    const allChildren = el.querySelectorAll('*');
+    const origChildStyles = [];
+    allChildren.forEach(child => origChildStyles.push(child.style.cssText));
+
+    // Force full width, no overflow, no hidden content
     el.style.width = '1400px';
     el.style.height = 'auto';
     el.style.overflow = 'visible';
+    el.style.position = 'relative';
+
+    // Remove overflow hidden/scroll from all children
+    allChildren.forEach(child => {
+        child.style.overflow = 'visible';
+        child.style.height = 'auto';
+        child.style.maxHeight = 'none';
+    });
 
     setTimeout(() => {
         html2canvas(el, {
             scale: 2, useCORS: true, backgroundColor: '#dfe6ed', logging: false,
             width: el.scrollWidth, height: el.scrollHeight,
-            windowWidth: el.scrollWidth + 50, windowHeight: el.scrollHeight + 50
+            windowWidth: el.scrollWidth + 100, windowHeight: el.scrollHeight + 100,
+            x: 0, y: 0
         }).then(captured => {
+            // Restore all styles
             el.style.cssText = origStyle;
+            allChildren.forEach((child, i) => { child.style.cssText = origChildStyles[i]; });
 
             const ratio = 16 / 9;
             const srcW = captured.width, srcH = captured.height;
@@ -459,8 +476,9 @@ function saveCurrentPage(format) {
             btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
             el.style.cssText = origStyle;
+            allChildren.forEach((child, i) => { child.style.cssText = origChildStyles[i]; });
             alert('Gagal menyimpan.'); console.error(err);
             btn.innerHTML = orig; btn.disabled = false;
         });
-    }, 100);
+    }, 200);
 }
