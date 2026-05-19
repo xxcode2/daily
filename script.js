@@ -258,58 +258,6 @@ function generateDeptCards(divData) {
     });
 }
 
-// Save as image
-function saveAsImage(format) {
-    const el = document.getElementById('report-container');
-    const btn = event.currentTarget;
-    const orig = btn.innerHTML;
-    btn.innerHTML = '\u23F3 Menyimpan...';
-    btn.disabled = true;
-
-    const origStyle = el.style.cssText;
-    el.style.width = '1400px';
-    el.style.height = 'auto';
-    el.style.overflow = 'visible';
-
-    setTimeout(() => {
-        html2canvas(el, {
-            scale: 2, useCORS: true, backgroundColor: '#dfe6ed', logging: false,
-            width: el.scrollWidth, height: el.scrollHeight,
-            windowWidth: el.scrollWidth + 50, windowHeight: el.scrollHeight + 50
-        }).then(captured => {
-            el.style.cssText = origStyle;
-
-            const ratio = 16 / 9;
-            const srcW = captured.width, srcH = captured.height;
-            let outW, outH;
-            if (srcW / srcH >= ratio) { outW = srcW; outH = Math.round(srcW / ratio); }
-            else { outH = srcH; outW = Math.round(srcH * ratio); }
-            if (outW < 1920) { const s = 1920 / outW; outW = 1920; outH = Math.round(outH * s); }
-
-            const final = document.createElement('canvas');
-            final.width = outW; final.height = outH;
-            const ctx = final.getContext('2d');
-            ctx.fillStyle = '#dfe6ed';
-            ctx.fillRect(0, 0, outW, outH);
-
-            const scale = Math.min(outW / srcW, outH / srcH);
-            const dW = srcW * scale, dH = srcH * scale;
-            ctx.drawImage(captured, (outW - dW) / 2, (outH - dH) / 2, dW, dH);
-
-            const link = document.createElement('a');
-            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}`;
-            if (format === 'png') { link.download = fn + '.png'; link.href = final.toDataURL('image/png'); }
-            else { link.download = fn + '.jpg'; link.href = final.toDataURL('image/jpeg', 0.95); }
-            link.click();
-            btn.innerHTML = orig; btn.disabled = false;
-        }).catch(err => {
-            el.style.cssText = origStyle;
-            alert('Gagal menyimpan.'); console.error(err);
-            btn.innerHTML = orig; btn.disabled = false;
-        });
-    }, 100);
-}
-
 function goBack() {
     document.getElementById('form-section').style.display = 'block';
     document.getElementById('report-section').style.display = 'none';
@@ -412,69 +360,45 @@ function switchPage(pageId) {
 }
 
 // ===== SAVE CURRENT PAGE =====
-function saveCurrentPage(event, format) {
+function saveCurrentPage(btn, format) {
     const containerId = currentPage === 'page1' ? 'report-container-page1' : 'report-container-page2';
     const el = document.getElementById(containerId);
-    const btn = event.currentTarget;
     const orig = btn.innerHTML;
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Clone element ke offscreen
-    const clone = el.cloneNode(true);
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.width = '1400px';
-    clone.style.height = 'auto';
-    clone.style.overflow = 'visible';
-    clone.style.zIndex = '-1';
-    clone.style.display = 'block';
-    clone.style.visibility = 'visible';
-    document.body.appendChild(clone);
+    const width = el.scrollWidth;
+    const height = el.scrollHeight;
 
-    // CRITICAL: Copy canvas bitmap dari original ke clone
-    // cloneNode() TIDAK copy isi pixel canvas, hanya struktur HTML
-    const origCanvases = el.querySelectorAll('canvas');
-    const cloneCanvases = clone.querySelectorAll('canvas');
-    origCanvases.forEach((origCanvas, i) => {
-        if (cloneCanvases[i] && origCanvas.width > 0 && origCanvas.height > 0) {
-            cloneCanvases[i].width = origCanvas.width;
-            cloneCanvases[i].height = origCanvas.height;
-            const ctx = cloneCanvases[i].getContext('2d');
-            ctx.drawImage(origCanvas, 0, 0);
+    html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: width,
+        height: height,
+        windowWidth: width,
+        windowHeight: height,
+        scrollX: 0,
+        scrollY: 0
+    }).then(captured => {
+        const link = document.createElement('a');
+        const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
+        const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
+        if (format === 'png') {
+            link.download = fn + '.png';
+            link.href = captured.toDataURL('image/png');
+        } else {
+            link.download = fn + '.jpg';
+            link.href = captured.toDataURL('image/jpeg', 0.95);
         }
+        link.click();
+        btn.innerHTML = orig;
+        btn.disabled = false;
+    }).catch(err => {
+        alert('Gagal menyimpan. Coba lagi.');
+        console.error(err);
+        btn.innerHTML = orig;
+        btn.disabled = false;
     });
-
-    setTimeout(() => {
-        html2canvas(clone, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            logging: false,
-            width: 1400,
-            windowWidth: 1400
-        }).then(captured => {
-            if (clone.parentNode) document.body.removeChild(clone);
-
-            const link = document.createElement('a');
-            const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
-            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
-            if (format === 'png') {
-                link.download = fn + '.png';
-                link.href = captured.toDataURL('image/png');
-            } else {
-                link.download = fn + '.jpg';
-                link.href = captured.toDataURL('image/jpeg', 0.95);
-            }
-            link.click();
-            btn.innerHTML = orig; btn.disabled = false;
-        }).catch(err => {
-            if (clone.parentNode) document.body.removeChild(clone);
-            alert('Gagal menyimpan. Coba lagi.');
-            console.error(err);
-            btn.innerHTML = orig; btn.disabled = false;
-        });
-    }, 400);
 }
