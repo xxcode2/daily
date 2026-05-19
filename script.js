@@ -412,7 +412,7 @@ function switchPage(pageId) {
 }
 
 // ===== SAVE CURRENT PAGE =====
-function saveCurrentPage(format) {
+function saveCurrentPage(event, format) {
     const containerId = currentPage === 'page1' ? 'report-container-page1' : 'report-container-page2';
     const el = document.getElementById(containerId);
     const btn = event.currentTarget;
