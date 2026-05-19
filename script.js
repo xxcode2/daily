@@ -16,11 +16,11 @@ function removeRow(btn) {
 }
 
 const divisions = [
-    { id: 'nrm-activities', name: 'NRM', label: 'ADMIN & DOCUMENTS', desc: 'PO generation, document filing, transactions', icon: '&#127793;', bg: '#1a5c2e' },
-    { id: 'cs-activities', name: 'CS', label: 'CLEANLINESS & WASTE', desc: 'Plant cleaning, waste disposal', icon: '&#128172;', bg: '#1a3a6b' },
-    { id: 'utility-activities', name: 'UTILITY', label: 'FACILITIES & MAINTENANCE', desc: 'Panel checks, repairs', icon: '&#128295;', bg: '#b8860b' },
-    { id: 'ts-activities', name: 'TS', label: 'INFRASTRUCTURE & PROJECTS', desc: 'Civil installations, layout painting', icon: '&#128225;', bg: '#4a0e8f' },
-    { id: 'ga-activities', name: 'GA Internal', label: 'STRATEGIC PLANNING & ADMIN', desc: 'Catering, strategic proposals', icon: '&#9881;', bg: '#8b0000' }
+    { id: 'nrm-activities', name: 'NRM', prefix: 'nrm', icon: '&#127793;', bg: '#1a5c2e' },
+    { id: 'cs-activities', name: 'CS', prefix: 'cs', icon: '&#128172;', bg: '#1a3a6b' },
+    { id: 'utility-activities', name: 'UTILITY', prefix: 'utility', icon: '&#128295;', bg: '#b8860b' },
+    { id: 'ts-activities', name: 'TS', prefix: 'ts', icon: '&#128225;', bg: '#4a0e8f' },
+    { id: 'ga-activities', name: 'GA Internal', prefix: 'ga', icon: '&#9881;', bg: '#8b0000' }
 ];
 
 function formatDate(dateStr) {
@@ -45,7 +45,19 @@ function generateReport() {
             const cat = row.querySelector('.category-select').value;
             if (name) { acts.push({ name, category: cat }); allActivities.push({ name, category: cat, dept: div.name }); }
         });
-        divData.push({ ...div, activities: acts, reguler: acts.filter(a=>a.category==='REGULER').length, project: acts.filter(a=>a.category==='PROJECT').length, additional: acts.filter(a=>a.category==='ADDITIONAL').length });
+
+        // Get manual card inputs
+        const label = document.getElementById(div.prefix + '-label').value.trim();
+        const desc = document.getElementById(div.prefix + '-desc').value.trim();
+        const tag = document.getElementById(div.prefix + '-tag').value.trim();
+
+        divData.push({
+            ...div, activities: acts,
+            reguler: acts.filter(a => a.category === 'REGULER').length,
+            project: acts.filter(a => a.category === 'PROJECT').length,
+            additional: acts.filter(a => a.category === 'ADDITIONAL').length,
+            cardLabel: label, cardDesc: desc, cardTag: tag
+        });
     });
 
     if (allActivities.length === 0) { alert('Isi minimal 1 aktivitas!'); return; }
@@ -54,29 +66,19 @@ function generateReport() {
     const reguler = allActivities.filter(a => a.category === 'REGULER').length;
     const project = allActivities.filter(a => a.category === 'PROJECT').length;
     const additional = allActivities.filter(a => a.category === 'ADDITIONAL').length;
-    const regulerPct = Math.round((reguler/total)*100);
-    const projectPct = Math.round((project/total)*100);
+    const regulerPct = Math.round((reguler / total) * 100);
+    const projectPct = Math.round((project / total) * 100);
     const additionalPct = 100 - regulerPct - projectPct;
 
-    // Title
     document.getElementById('report-title').textContent = `GA DAILY ACTIVITY ANALYSIS \u2013 ${formatDate(dateVal)}`;
-
-    // Legend numbers
     document.getElementById('legend-reguler').textContent = reguler;
     document.getElementById('legend-project').textContent = project;
     document.getElementById('legend-additional').textContent = additional;
     document.getElementById('summary-total').textContent = total;
 
-    // Donut Chart
     drawDonut(reguler, project, additional, total, regulerPct, projectPct, additionalPct);
-
-    // Bar Chart
     drawBarChart(divData);
-
-    // Key Notes
-    generateKeyNotes(divData, regulerPct, total);
-
-    // Department Cards
+    renderKeyNotes();
     generateDeptCards(divData);
 
     document.getElementById('form-section').style.display = 'none';
@@ -88,7 +90,6 @@ function drawDonut(reguler, project, additional, total, rPct, pPct, aPct) {
     const ctx = canvas.getContext('2d');
     const cx = canvas.width / 2, cy = canvas.height / 2;
     const outerR = 120, innerR = 70;
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const segments = [
@@ -108,7 +109,6 @@ function drawDonut(reguler, project, additional, total, rPct, pPct, aPct) {
         ctx.fillStyle = seg.color;
         ctx.fill();
 
-        // Percentage label
         const mid = startAngle + slice / 2;
         const lx = cx + Math.cos(mid) * ((outerR + innerR) / 2);
         const ly = cy + Math.sin(mid) * ((outerR + innerR) / 2);
@@ -122,7 +122,6 @@ function drawDonut(reguler, project, additional, total, rPct, pPct, aPct) {
         startAngle = end;
     });
 
-    // Center text
     ctx.fillStyle = '#333';
     ctx.font = '600 13px Poppins';
     ctx.textAlign = 'center';
@@ -145,82 +144,73 @@ function drawBarChart(divData) {
         const totalH = ((d.reguler + d.project + d.additional) / maxVal) * chartH;
         let y = offsetY + chartH - totalH;
 
-        // Reguler
         const rH = (d.reguler / maxVal) * chartH;
-        ctx.fillStyle = '#c0392b';
-        ctx.fillRect(x, y, barW, rH);
-        y += rH;
-
-        // Project
+        ctx.fillStyle = '#c0392b'; ctx.fillRect(x, y, barW, rH); y += rH;
         const pH = (d.project / maxVal) * chartH;
-        ctx.fillStyle = '#27ae60';
-        ctx.fillRect(x, y, barW, pH);
-        y += pH;
-
-        // Additional
+        ctx.fillStyle = '#27ae60'; ctx.fillRect(x, y, barW, pH); y += pH;
         const aH = (d.additional / maxVal) * chartH;
-        ctx.fillStyle = '#f39c12';
-        ctx.fillRect(x, y, barW, aH);
+        ctx.fillStyle = '#f39c12'; ctx.fillRect(x, y, barW, aH);
 
-        // Label
-        ctx.fillStyle = '#333';
-        ctx.font = '600 11px Poppins';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = '#333'; ctx.font = '600 11px Poppins'; ctx.textAlign = 'center';
         ctx.fillText(d.name, x + barW / 2, offsetY + chartH + 15);
 
-        // Value on top
         const totalAct = d.reguler + d.project + d.additional;
         if (totalAct > 0) {
-            ctx.fillStyle = '#555';
-            ctx.font = 'bold 11px Poppins';
+            ctx.fillStyle = '#555'; ctx.font = 'bold 11px Poppins';
             ctx.fillText(totalAct, x + barW / 2, offsetY + chartH - totalH - 5);
         }
     });
 }
 
-function generateKeyNotes(divData, regulerPct, total) {
-    const notes = [];
-    notes.push(`<li><strong>MAJOR FOCUS:</strong> Operational efficiency is dominated by Regular tasks (${regulerPct}%).</li>`);
+function renderKeyNotes() {
+    const raw = document.getElementById('key-notes-input').value.trim();
+    const list = document.getElementById('key-notes-list');
+    list.innerHTML = '';
 
-    const projectDepts = divData.filter(d => d.project > 0).map(d => d.name);
-    if (projectDepts.length > 0) {
-        notes.push(`<li><strong>PROJECT INITIATIVES:</strong> Significant project push in ${projectDepts.join(' & ')}, focusing on new installations and strategic planning.</li>`);
+    if (!raw) {
+        list.innerHTML = '<li>No analysis notes provided.</li>';
+        return;
     }
 
-    const maxAdd = divData.reduce((a, b) => a.additional > b.additional ? a : b);
-    if (maxAdd.additional > 0) {
-        notes.push(`<li><strong>AD-HOC DEMAND:</strong> ${maxAdd.name} department handles the highest volume of Additional (Ad-hoc) requests.</li>`);
-    }
-
-    notes.push(`<li><strong>WORKFORCE BALANCE:</strong> Resource allocation needs review for higher Project and Additional tasks.</li>`);
-
-    document.getElementById('key-notes-list').innerHTML = notes.join('');
+    const lines = raw.split('\n').filter(l => l.trim());
+    lines.forEach(line => {
+        const li = document.createElement('li');
+        // Bold text before colon
+        const colonIdx = line.indexOf(':');
+        if (colonIdx > 0) {
+            li.innerHTML = `<strong>${line.substring(0, colonIdx + 1)}</strong>${line.substring(colonIdx + 1)}`;
+        } else {
+            li.textContent = line;
+        }
+        list.appendChild(li);
+    });
 }
 
 function generateDeptCards(divData) {
     const container = document.getElementById('dept-cards');
     container.innerHTML = '';
 
-    const tags = {
-        'UTILITY': { text: 'HIGH AD-HOC DEMAND', class: 'tag-yellow' },
-        'TS': { text: 'PROJECT DRIVE', class: 'tag-purple' },
-        'GA Internal': { text: 'PROJECT INITIATIVES', class: 'tag-red' }
-    };
+    const tagColors = ['tag-yellow', 'tag-purple', 'tag-red', 'tag-blue', 'tag-green'];
 
-    divData.forEach(d => {
+    divData.forEach((d, i) => {
         if (d.activities.length === 0) return;
-        const tag = tags[d.name] || null;
         const card = document.createElement('div');
         card.className = 'dept-card';
+
+        const label = d.cardLabel || d.name.toUpperCase();
+        const desc = d.cardDesc || `${d.activities.length} aktivitas hari ini`;
+        const tag = d.cardTag;
+        const tagClass = tagColors[i % tagColors.length];
+
         card.innerHTML = `
             <div class="dept-card-header" style="background:${d.bg}">
                 <span>${d.icon}</span>
                 <span>${d.name.toUpperCase()}</span>
             </div>
             <div class="dept-card-body">
-                <strong>${d.label}</strong>
-                Diringkas: ${d.desc}
-                ${tag ? `<br><span class="dept-card-tag ${tag.class}">${tag.text}</span>` : ''}
+                <strong>${label}</strong>
+                <span class="dept-desc">Diringkas: ${desc}</span>
+                ${tag ? `<span class="dept-card-tag ${tagClass}">${tag}</span>` : ''}
             </div>
         `;
         container.appendChild(card);
@@ -235,7 +225,6 @@ function saveAsImage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Remove constraints
     const origStyle = el.style.cssText;
     el.style.width = '1400px';
     el.style.height = 'auto';

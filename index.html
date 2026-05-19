@@ -11,7 +11,7 @@
 <body>
     <!-- INPUT FORM -->
     <div id="form-section">
-        <h1 class="form-title">GA Daily Activity Analysis - Input Form</h1>
+        <h1 class="form-title">GA Daily Activity Analysis</h1>
         
         <div class="date-input">
             <label for="activity-date">Tanggal:</label>
@@ -20,102 +20,99 @@
 
         <!-- NRM -->
         <div class="division-form">
-            <div class="division-header nrm-bg">
-                <span class="division-icon">&#127793;</span>
-                <span>NRM</span>
-            </div>
+            <div class="division-header nrm-bg"><span class="division-icon">&#127793;</span><span>NRM</span></div>
             <div class="activity-list" id="nrm-activities">
                 <div class="activity-row">
                     <input type="text" placeholder="Nama aktivitas..." class="activity-input">
-                    <select class="category-select">
-                        <option value="REGULER">REGULER</option>
-                        <option value="PROJECT">PROJECT</option>
-                        <option value="ADDITIONAL">ADDITIONAL</option>
-                    </select>
+                    <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                     <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
                 </div>
             </div>
             <button class="btn-add" onclick="addRow('nrm-activities')">+ Tambah Aktivitas</button>
+            <div class="dept-input-section">
+                <input type="text" id="nrm-label" placeholder="Label card (cth: ADMIN & DOCUMENTS)" class="dept-label-input">
+                <input type="text" id="nrm-desc" placeholder="Deskripsi ringkas (cth: PO generation, document filing)" class="dept-desc-input">
+                <input type="text" id="nrm-tag" placeholder="Tag/highlight (opsional, cth: HIGH VOLUME)" class="dept-tag-input">
+            </div>
         </div>
 
         <!-- CS -->
         <div class="division-form">
-            <div class="division-header cs-bg">
-                <span class="division-icon">&#128172;</span>
-                <span>CS</span>
-            </div>
+            <div class="division-header cs-bg"><span class="division-icon">&#128172;</span><span>CS</span></div>
             <div class="activity-list" id="cs-activities">
                 <div class="activity-row">
                     <input type="text" placeholder="Nama aktivitas..." class="activity-input">
-                    <select class="category-select">
-                        <option value="REGULER">REGULER</option>
-                        <option value="PROJECT">PROJECT</option>
-                        <option value="ADDITIONAL">ADDITIONAL</option>
-                    </select>
+                    <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                     <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
                 </div>
             </div>
             <button class="btn-add" onclick="addRow('cs-activities')">+ Tambah Aktivitas</button>
+            <div class="dept-input-section">
+                <input type="text" id="cs-label" placeholder="Label card (cth: CLEANLINESS & WASTE)" class="dept-label-input">
+                <input type="text" id="cs-desc" placeholder="Deskripsi ringkas" class="dept-desc-input">
+                <input type="text" id="cs-tag" placeholder="Tag/highlight (opsional)" class="dept-tag-input">
+            </div>
         </div>
 
         <!-- UTILITY -->
         <div class="division-form">
-            <div class="division-header utility-bg">
-                <span class="division-icon">&#128295;</span>
-                <span>UTILITY</span>
-            </div>
+            <div class="division-header utility-bg"><span class="division-icon">&#128295;</span><span>UTILITY</span></div>
             <div class="activity-list" id="utility-activities">
                 <div class="activity-row">
                     <input type="text" placeholder="Nama aktivitas..." class="activity-input">
-                    <select class="category-select">
-                        <option value="REGULER">REGULER</option>
-                        <option value="PROJECT">PROJECT</option>
-                        <option value="ADDITIONAL">ADDITIONAL</option>
-                    </select>
+                    <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                     <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
                 </div>
             </div>
             <button class="btn-add" onclick="addRow('utility-activities')">+ Tambah Aktivitas</button>
+            <div class="dept-input-section">
+                <input type="text" id="utility-label" placeholder="Label card (cth: FACILITIES & MAINTENANCE)" class="dept-label-input">
+                <input type="text" id="utility-desc" placeholder="Deskripsi ringkas" class="dept-desc-input">
+                <input type="text" id="utility-tag" placeholder="Tag/highlight (opsional)" class="dept-tag-input">
+            </div>
         </div>
 
         <!-- TS -->
         <div class="division-form">
-            <div class="division-header ts-bg">
-                <span class="division-icon">&#128225;</span>
-                <span>TS</span>
-            </div>
+            <div class="division-header ts-bg"><span class="division-icon">&#128225;</span><span>TS</span></div>
             <div class="activity-list" id="ts-activities">
                 <div class="activity-row">
                     <input type="text" placeholder="Nama aktivitas..." class="activity-input">
-                    <select class="category-select">
-                        <option value="REGULER">REGULER</option>
-                        <option value="PROJECT">PROJECT</option>
-                        <option value="ADDITIONAL">ADDITIONAL</option>
-                    </select>
+                    <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                     <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
                 </div>
             </div>
             <button class="btn-add" onclick="addRow('ts-activities')">+ Tambah Aktivitas</button>
+            <div class="dept-input-section">
+                <input type="text" id="ts-label" placeholder="Label card (cth: INFRASTRUCTURE & PROJECTS)" class="dept-label-input">
+                <input type="text" id="ts-desc" placeholder="Deskripsi ringkas" class="dept-desc-input">
+                <input type="text" id="ts-tag" placeholder="Tag/highlight (opsional)" class="dept-tag-input">
+            </div>
         </div>
 
         <!-- GA Internal -->
         <div class="division-form">
-            <div class="division-header ga-bg">
-                <span class="division-icon">&#9881;</span>
-                <span>GA Internal</span>
-            </div>
+            <div class="division-header ga-bg"><span class="division-icon">&#9881;</span><span>GA Internal</span></div>
             <div class="activity-list" id="ga-activities">
                 <div class="activity-row">
                     <input type="text" placeholder="Nama aktivitas..." class="activity-input">
-                    <select class="category-select">
-                        <option value="REGULER">REGULER</option>
-                        <option value="PROJECT">PROJECT</option>
-                        <option value="ADDITIONAL">ADDITIONAL</option>
-                    </select>
+                    <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                     <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
                 </div>
             </div>
             <button class="btn-add" onclick="addRow('ga-activities')">+ Tambah Aktivitas</button>
+            <div class="dept-input-section">
+                <input type="text" id="ga-label" placeholder="Label card (cth: STRATEGIC PLANNING & ADMIN)" class="dept-label-input">
+                <input type="text" id="ga-desc" placeholder="Deskripsi ringkas" class="dept-desc-input">
+                <input type="text" id="ga-tag" placeholder="Tag/highlight (opsional)" class="dept-tag-input">
+            </div>
+        </div>
+
+        <!-- KEY ANALYSIS NOTES -->
+        <div class="notes-form">
+            <h3>&#128221; Key Analysis Notes</h3>
+            <p class="notes-hint">Tulis catatan analisis harian (satu baris = satu poin). Isi manual sesuai kondisi hari ini.</p>
+            <textarea id="key-notes-input" rows="5" placeholder="Contoh:&#10;MAJOR FOCUS: Operasional didominasi task Regular (56%).&#10;PROJECT INITIATIVES: Push project di TS & GA Internal.&#10;AD-HOC DEMAND: Utility paling banyak request tambahan."></textarea>
         </div>
 
         <button class="btn-generate" onclick="generateReport()">GENERATE REPORT</button>
@@ -125,14 +122,11 @@
     <div id="report-section" style="display:none;">
         <div class="report-wrapper">
             <div class="report-container" id="report-container">
-                <!-- Header -->
                 <div class="report-header">
-                    <h1 id="report-title">GA DAILY ACTIVITY ANALYSIS - Monday, May 18, 2026</h1>
+                    <h1 id="report-title">GA DAILY ACTIVITY ANALYSIS - Monday, May 19, 2026</h1>
                 </div>
 
-                <!-- Main Content: 2 panels -->
                 <div class="report-panels">
-                    <!-- LEFT PANEL: Donut Chart + Summary -->
                     <div class="panel panel-left">
                         <h3 class="panel-title">TOTAL ACTIVITY DISTRIBUTION</h3>
                         <div class="donut-section">
@@ -154,7 +148,6 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT PANEL: Bar Chart + Key Notes -->
                     <div class="panel panel-right">
                         <h3 class="panel-title">OPERATIONAL BREAKDOWN BY DEPARTMENT</h3>
                         <div class="bar-legend">
@@ -170,12 +163,10 @@
                     </div>
                 </div>
 
-                <!-- BOTTOM: Department Cards -->
                 <div class="dept-cards" id="dept-cards"></div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="report-actions">
             <button class="action-btn btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
             <button class="action-btn btn-save-png" onclick="saveAsImage('png')">&#128247; Save PNG</button>
