@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Activity GA</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- INPUT FORM -->
+    <div id="form-section">
+        <h1 class="form-title">Daily Activity GA - Input Form</h1>
+        
+        <div class="date-input">
+            <label for="activity-date">Tanggal:</label>
+            <input type="date" id="activity-date">
+        </div>
+
+        <!-- NRM -->
+        <div class="division-form" data-division="NRM">
+            <div class="division-header nrm-bg">
+                <span class="division-icon">&#127793;</span>
+                <span>NRM</span>
+            </div>
+            <div class="activity-list" id="nrm-activities">
+                <div class="activity-row">
+                    <input type="text" placeholder="Nama aktivitas..." class="activity-input">
+                    <select class="category-select">
+                        <option value="REGULER">REGULER</option>
+                        <option value="PROJECT">PROJECT</option>
+                        <option value="ADDITIONAL">ADDITIONAL</option>
+                    </select>
+                    <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addRow('nrm-activities')">+ Tambah Aktivitas</button>
+        </div>
+
+        <!-- CS -->
+        <div class="division-form" data-division="CS">
+            <div class="division-header cs-bg">
+                <span class="division-icon">&#128172;</span>
+                <span>CS</span>
+            </div>
+            <div class="activity-list" id="cs-activities">
+                <div class="activity-row">
+                    <input type="text" placeholder="Nama aktivitas..." class="activity-input">
+                    <select class="category-select">
+                        <option value="REGULER">REGULER</option>
+                        <option value="PROJECT">PROJECT</option>
+                        <option value="ADDITIONAL">ADDITIONAL</option>
+                    </select>
+                    <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addRow('cs-activities')">+ Tambah Aktivitas</button>
+        </div>
+
+        <!-- UTILITY -->
+        <div class="division-form" data-division="UTILITY">
+            <div class="division-header utility-bg">
+                <span class="division-icon">&#128295;</span>
+                <span>UTILITY</span>
+            </div>
+            <div class="activity-list" id="utility-activities">
+                <div class="activity-row">
+                    <input type="text" placeholder="Nama aktivitas..." class="activity-input">
+                    <select class="category-select">
+                        <option value="REGULER">REGULER</option>
+                        <option value="PROJECT">PROJECT</option>
+                        <option value="ADDITIONAL">ADDITIONAL</option>
+                    </select>
+                    <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addRow('utility-activities')">+ Tambah Aktivitas</button>
+        </div>
+
+        <!-- TS -->
+        <div class="division-form" data-division="TS">
+            <div class="division-header ts-bg">
+                <span class="division-icon">&#128225;</span>
+                <span>TS</span>
+            </div>
+            <div class="activity-list" id="ts-activities">
+                <div class="activity-row">
+                    <input type="text" placeholder="Nama aktivitas..." class="activity-input">
+                    <select class="category-select">
+                        <option value="REGULER">REGULER</option>
+                        <option value="PROJECT">PROJECT</option>
+                        <option value="ADDITIONAL">ADDITIONAL</option>
+                    </select>
+                    <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addRow('ts-activities')">+ Tambah Aktivitas</button>
+        </div>
+
+        <!-- GA Internal -->
+        <div class="division-form" data-division="GA Internal">
+            <div class="division-header ga-bg">
+                <span class="division-icon">&#9881;</span>
+                <span>GA Internal</span>
+            </div>
+            <div class="activity-list" id="ga-activities">
+                <div class="activity-row">
+                    <input type="text" placeholder="Nama aktivitas..." class="activity-input">
+                    <select class="category-select">
+                        <option value="REGULER">REGULER</option>
+                        <option value="PROJECT">PROJECT</option>
+                        <option value="ADDITIONAL">ADDITIONAL</option>
+                    </select>
+                    <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addRow('ga-activities')">+ Tambah Aktivitas</button>
+        </div>
+
+        <button class="btn-generate" onclick="generateReport()">GENERATE REPORT</button>
+    </div>
+
+    <!-- OUTPUT REPORT -->
+    <div id="report-section" style="display:none;">
+        <div class="report-container" id="report-container">
+            <!-- Header -->
+            <div class="report-header">
+                <div class="header-line"></div>
+                <h1 id="report-title">DAILY ACTIVITY GA – Jumat, 15 Mei 2026</h1>
+                <div class="header-line"></div>
+            </div>
+
+            <div class="report-body">
+                <div class="report-left">
+                    <!-- Division sections will be injected here -->
+                    <div id="divisions-output"></div>
+                </div>
+                <div class="report-right">
+                    <canvas id="pieChart" width="300" height="300"></canvas>
+                    <div class="stats-box">
+                        <h3>STATISTIK AKTIVITAS</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">TOTAL AKTIVITAS</span>
+                                <span class="stat-value" id="stat-total">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">REGULER</span>
+                                <span class="stat-value stat-red" id="stat-reguler">0</span>
+                                <span class="stat-percent" id="stat-reguler-pct">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">PROJECT</span>
+                                <span class="stat-value stat-green" id="stat-project">0</span>
+                                <span class="stat-percent" id="stat-project-pct">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">ADDITIONAL</span>
+                                <span class="stat-value stat-yellow" id="stat-additional">0</span>
+                                <span class="stat-percent" id="stat-additional-pct">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="legend-box">
+                        <div class="legend-item">
+                            <span class="legend-icon reguler-icon">&#128203;</span>
+                            <span>REGULER</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-icon project-icon">&#128196;</span>
+                            <span>PROJECT</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-icon additional-icon">&#10133;</span>
+                            <span>ADDITIONAL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="report-actions">
+            <button class="btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
+            <button class="btn-print" onclick="window.print()">&#128424; Print / Save PDF</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
