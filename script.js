@@ -420,18 +420,57 @@ function saveCurrentPage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Scroll to top first
-    window.scrollTo(0, 0);
+    // PENTING: Pastikan element terlihat (display:block) agar bisa di-render
+    const wasHidden = el.offsetParent === null;
+    const parentPage = el.closest('.report-page');
+    const origDisplay = parentPage ? parentPage.style.display : null;
+    if (parentPage && wasHidden) parentPage.style.display = 'block';
+
+    // Clone element ke offscreen
+    const clone = el.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.width = '1400px';
+    clone.style.height = 'auto';
+    clone.style.overflow = 'visible';
+    clone.style.zIndex = '-1';
+    clone.style.display = 'block';
+    clone.style.visibility = 'visible';
+    document.body.appendChild(clone);
+
+    // CRITICAL FIX: Copy canvas pixel content from original to clone
+    // (cloneNode doesn't copy canvas bitmap data!)
+    const origCanvases = el.querySelectorAll('canvas');
+    const cloneCanvases = clone.querySelectorAll('canvas');
+    origCanvases.forEach((origCanvas, i) => {
+        if (cloneCanvases[i] && origCanvas.width > 0 && origCanvas.height > 0) {
+            cloneCanvases[i].width = origCanvas.width;
+            cloneCanvases[i].height = origCanvas.height;
+            const ctx = cloneCanvases[i].getContext('2d');
+            try {
+                ctx.drawImage(origCanvas, 0, 0);
+            } catch (e) {
+                console.warn('Failed to copy canvas:', e);
+            }
+        }
+    });
+
+    // Restore parent visibility
+    if (parentPage && wasHidden) parentPage.style.display = origDisplay || '';
 
     setTimeout(() => {
-        html2canvas(el, {
+        html2canvas(clone, {
             scale: 2,
             useCORS: true,
+            allowTaint: true,
             backgroundColor: '#ffffff',
             logging: false,
-            scrollX: 0,
-            scrollY: -window.scrollY
+            width: 1400,
+            windowWidth: 1400
         }).then(captured => {
+            if (clone.parentNode) document.body.removeChild(clone);
+
             const link = document.createElement('a');
             const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
             const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
@@ -445,9 +484,10 @@ function saveCurrentPage(format) {
             link.click();
             btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
-            alert('Gagal menyimpan. Coba lagi.');
+            if (clone.parentNode) document.body.removeChild(clone);
+            alert('Gagal menyimpan. Coba lagi.\n\nError: ' + err.message);
             console.error(err);
             btn.innerHTML = orig; btn.disabled = false;
         });
-    }, 500);
+    }, 400);
 }
