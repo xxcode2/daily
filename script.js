@@ -420,38 +420,27 @@ function saveCurrentPage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Save original styles
-    const origStyle = el.style.cssText;
-    const allChildren = el.querySelectorAll('*');
-    const origChildStyles = [];
-    allChildren.forEach(child => origChildStyles.push(child.style.cssText));
-
-    // Force desktop width and remove all overflow constraints
-    el.style.cssText = 'width:1400px;height:auto;overflow:visible;position:relative;padding:35px;';
-    allChildren.forEach(child => {
-        child.style.overflow = 'visible';
-        child.style.maxHeight = 'none';
-    });
+    // Clone element ke offscreen agar tidak terganggu scroll/viewport
+    const clone = el.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.width = '1400px';
+    clone.style.height = 'auto';
+    clone.style.overflow = 'visible';
+    clone.style.zIndex = '-1';
+    document.body.appendChild(clone);
 
     setTimeout(() => {
-        const captureW = el.scrollWidth;
-        const captureH = el.scrollHeight;
-
-        html2canvas(el, {
+        html2canvas(clone, {
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
-            logging: false,
-            width: captureW,
-            height: captureH,
-            windowWidth: captureW,
-            windowHeight: captureH
+            logging: false
         }).then(captured => {
-            // Restore all styles
-            el.style.cssText = origStyle;
-            allChildren.forEach((child, i) => { child.style.cssText = origChildStyles[i]; });
+            // Hapus clone
+            document.body.removeChild(clone);
 
-            // Download directly - no resizing, no 16:9 forcing
             const link = document.createElement('a');
             const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
             const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
@@ -465,9 +454,9 @@ function saveCurrentPage(format) {
             link.click();
             btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
-            el.style.cssText = origStyle;
-            allChildren.forEach((child, i) => { child.style.cssText = origChildStyles[i]; });
-            alert('Gagal menyimpan.'); console.error(err);
+            document.body.removeChild(clone);
+            alert('Gagal menyimpan. Coba lagi.');
+            console.error(err);
             btn.innerHTML = orig; btn.disabled = false;
         });
     }, 300);
