@@ -6,6 +6,7 @@
     <title>Daily Activity GA</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <!-- INPUT FORM -->
@@ -122,27 +123,15 @@
 
     <!-- OUTPUT REPORT -->
     <div id="report-section" style="display:none;">
-        <!-- TOOLBAR SAVE - FIXED DI ATAS -->
-        <div class="save-toolbar">
-            <button class="btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
-            <div class="save-buttons">
-                <button class="btn-save-png" onclick="saveAsImage('png')">&#128247; SAVE PNG</button>
-                <button class="btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; SAVE JPG</button>
-                <button class="btn-print" onclick="window.print()">&#128424; Print PDF</button>
-            </div>
-        </div>
-
-        <!-- REPORT CONTAINER - ini yang di-capture jadi gambar 16:9 -->
+        <!-- REPORT CONTAINER -->
         <div class="report-wrapper">
             <div class="report-container" id="report-container">
-                <!-- Header -->
                 <div class="report-header">
-                    <h1 id="report-title">DAILY ACTIVITY GA – Jumat, 15 Mei 2026</h1>
+                    <h1 id="report-title">DAILY ACTIVITY GA - Selasa, 19 Mei 2026</h1>
                 </div>
 
                 <div class="report-body">
                     <div class="report-left">
-                        <!-- Division sections will be injected here -->
                         <div id="divisions-output"></div>
                     </div>
                     <div class="report-right">
@@ -172,16 +161,16 @@
                             </div>
                         </div>
                         <div class="legend-box">
-                            <div class="legend-item">
-                                <span class="legend-icon reguler-icon">&#128203;</span>
+                            <div class="legend-item leg-reguler">
+                                <span>&#128203;</span>
                                 <span>REGULER</span>
                             </div>
-                            <div class="legend-item">
-                                <span class="legend-icon project-icon">&#128196;</span>
+                            <div class="legend-item leg-project">
+                                <span>&#128196;</span>
                                 <span>PROJECT</span>
                             </div>
-                            <div class="legend-item">
-                                <span class="legend-icon additional-icon">&#10133;</span>
+                            <div class="legend-item leg-additional">
+                                <span>&#10133;</span>
                                 <span>ADDITIONAL</span>
                             </div>
                         </div>
@@ -189,9 +178,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- TOMBOL AKSI DI BAWAH REPORT -->
+        <div class="report-actions">
+            <button class="action-btn btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
+            <button class="action-btn btn-save-png" onclick="saveAsImage('png')">&#128247; Save PNG</button>
+            <button class="action-btn btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; Save JPG</button>
+            <button class="action-btn btn-print" onclick="window.print()">&#128424; Print / Save PDF</button>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

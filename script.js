@@ -36,7 +36,7 @@ const divisions = [
     { id: 'cs-activities', name: 'CS', icon: '&#128172;', bgClass: 'cs-bg' },
     { id: 'utility-activities', name: 'UTILITY', icon: '&#128295;', bgClass: 'utility-bg' },
     { id: 'ts-activities', name: 'TS', icon: '&#128225;', bgClass: 'ts-bg' },
-    { id: 'ga-activities', name: 'GA\nInternal', icon: '&#9881;', bgClass: 'ga-bg' }
+    { id: 'ga-activities', name: 'GA Internal', icon: '&#9881;', bgClass: 'ga-bg' }
 ];
 
 // Format date to Indonesian
@@ -60,7 +60,6 @@ function generateReport() {
         return;
     }
 
-    // Collect all activities
     let allActivities = [];
     let divisionData = [];
 
@@ -79,10 +78,7 @@ function generateReport() {
         });
 
         if (activities.length > 0) {
-            divisionData.push({
-                ...div,
-                activities: activities
-            });
+            divisionData.push({ ...div, activities: activities });
         }
     });
 
@@ -91,7 +87,6 @@ function generateReport() {
         return;
     }
 
-    // Calculate stats
     const total = allActivities.length;
     const reguler = allActivities.filter(a => a.category === 'REGULER').length;
     const project = allActivities.filter(a => a.category === 'PROJECT').length;
@@ -101,44 +96,40 @@ function generateReport() {
     const projectPct = Math.round((project / total) * 100);
     const additionalPct = Math.round((additional / total) * 100);
 
-    // Update title
     document.getElementById('report-title').textContent = `DAILY ACTIVITY GA \u2013 ${formatDate(dateVal)}`;
 
-    // Generate division cards
     const outputDiv = document.getElementById('divisions-output');
     outputDiv.innerHTML = '';
+
+    const bgColors = {
+        'nrm-bg': 'linear-gradient(135deg, #1a5c2e, #2d8a4e)',
+        'cs-bg': 'linear-gradient(135deg, #1a3a6b, #2a5aa8)',
+        'utility-bg': 'linear-gradient(135deg, #b8860b, #d4a017)',
+        'ts-bg': 'linear-gradient(135deg, #4a0e8f, #7b2ff7)',
+        'ga-bg': 'linear-gradient(135deg, #8b0000, #c0392b)'
+    };
 
     divisionData.forEach(div => {
         const card = document.createElement('div');
         card.className = 'division-card';
 
-        const bgColors = {
-            'nrm-bg': 'linear-gradient(135deg, #1a5c2e, #2d8a4e)',
-            'cs-bg': 'linear-gradient(135deg, #1a3a6b, #2a5aa8)',
-            'utility-bg': 'linear-gradient(135deg, #b8860b, #d4a017)',
-            'ts-bg': 'linear-gradient(135deg, #4a0e8f, #7b2ff7)',
-            'ga-bg': 'linear-gradient(135deg, #8b0000, #c0392b)'
-        };
-
         let activitiesHtml = div.activities.map(a => {
             const badgeClass = `badge-${a.category.toLowerCase()}`;
-            return `<li><span>\u2022 ${a.name}</span><span class="badge ${badgeClass}">${a.category}</span></li>`;
+            return `<li><span class="act-name">\u2022 ${a.name}</span><span class="badge ${badgeClass}">${a.category}</span></li>`;
         }).join('');
 
         card.innerHTML = `
             <div class="division-card-label" style="background: ${bgColors[div.bgClass]}">
                 <span class="card-icon">${div.icon}</span>
-                <span>${div.name.replace('\n', '<br>')}</span>
+                <span class="card-name">${div.name}</span>
             </div>
             <div class="division-card-content">
                 <ul>${activitiesHtml}</ul>
             </div>
         `;
-
         outputDiv.appendChild(card);
     });
 
-    // Update stats
     document.getElementById('stat-total').textContent = total;
     document.getElementById('stat-reguler').textContent = reguler;
     document.getElementById('stat-project').textContent = project;
@@ -147,15 +138,13 @@ function generateReport() {
     document.getElementById('stat-project-pct').textContent = `\u25CF ${projectPct}%`;
     document.getElementById('stat-additional-pct').textContent = `\u25CF ${additionalPct}%`;
 
-    // Draw pie chart
     drawPieChart(reguler, project, additional, total);
 
-    // Show report
     document.getElementById('form-section').style.display = 'none';
     document.getElementById('report-section').style.display = 'block';
 }
 
-// Draw pie chart on canvas
+// Draw pie chart
 function drawPieChart(reguler, project, additional, total) {
     const canvas = document.getElementById('pieChart');
     const ctx = canvas.getContext('2d');
@@ -166,9 +155,9 @@ function drawPieChart(reguler, project, additional, total) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const data = [
-        { value: reguler, color: '#c0392b', label: 'REGULER' },
-        { value: project, color: '#27ae60', label: 'PROJECT' },
-        { value: additional, color: '#f39c12', label: 'ADDITIONAL' }
+        { value: reguler, color: '#c0392b' },
+        { value: project, color: '#27ae60' },
+        { value: additional, color: '#f39c12' }
     ].filter(d => d.value > 0);
 
     let startAngle = -Math.PI / 2;
@@ -177,7 +166,6 @@ function drawPieChart(reguler, project, additional, total) {
         const sliceAngle = (segment.value / total) * 2 * Math.PI;
         const endAngle = startAngle + sliceAngle;
 
-        // Draw slice
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);
@@ -185,16 +173,14 @@ function drawPieChart(reguler, project, additional, total) {
         ctx.fillStyle = segment.color;
         ctx.fill();
 
-        // Draw percentage label
         const midAngle = startAngle + sliceAngle / 2;
-        const labelRadius = radius * 0.65;
-        const labelX = centerX + Math.cos(midAngle) * labelRadius;
-        const labelY = centerY + Math.sin(midAngle) * labelRadius;
+        const labelX = centerX + Math.cos(midAngle) * radius * 0.65;
+        const labelY = centerY + Math.sin(midAngle) * radius * 0.65;
         const pct = Math.round((segment.value / total) * 100);
 
         if (pct > 0) {
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 16px Poppins';
+            ctx.font = 'bold 16px Poppins, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(`${pct}%`, labelX, labelY);
@@ -202,23 +188,14 @@ function drawPieChart(reguler, project, additional, total) {
 
         startAngle = endAngle;
     });
-
-    // Draw border
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 3;
-    ctx.stroke();
 }
 
-// Save report as PNG or JPG in 16:9 ratio (1920x1080)
+// Save report as image 16:9 (1920x1080) - responsive to content
 function saveAsImage(format) {
     const reportContainer = document.getElementById('report-container');
-    
-    // Show loading indicator
-    const btn = event.target;
+    const btn = event.currentTarget;
     const originalText = btn.innerHTML;
-    btn.innerHTML = '⏳ Processing...';
+    btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
     html2canvas(reportContainer, {
@@ -227,33 +204,52 @@ function saveAsImage(format) {
         backgroundColor: '#ffffff',
         logging: false,
         width: reportContainer.scrollWidth,
-        height: reportContainer.scrollHeight
+        height: reportContainer.scrollHeight,
+        windowWidth: reportContainer.scrollWidth,
+        windowHeight: reportContainer.scrollHeight
     }).then(capturedCanvas => {
-        // Create 16:9 canvas (1920x1080)
-        const outputWidth = 1920;
-        const outputHeight = 1080;
+        // Tentukan ukuran output 16:9
+        const ratio = 16 / 9;
+        const srcW = capturedCanvas.width;
+        const srcH = capturedCanvas.height;
+        const srcRatio = srcW / srcH;
+
+        let outputWidth, outputHeight;
+
+        if (srcRatio >= ratio) {
+            // Konten lebih lebar dari 16:9, pakai lebar sebagai basis
+            outputWidth = srcW;
+            outputHeight = Math.round(srcW / ratio);
+        } else {
+            // Konten lebih tinggi dari 16:9, pakai tinggi sebagai basis
+            outputHeight = srcH;
+            outputWidth = Math.round(srcH * ratio);
+        }
+
+        // Minimum 1920x1080
+        if (outputWidth < 1920) {
+            const upscale = 1920 / outputWidth;
+            outputWidth = 1920;
+            outputHeight = Math.round(outputHeight * upscale);
+        }
+
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = outputWidth;
         finalCanvas.height = outputHeight;
         const ctx = finalCanvas.getContext('2d');
 
-        // Fill white background
+        // Background putih
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, outputWidth, outputHeight);
 
-        // Scale captured content to fit 16:9 while maintaining aspect ratio
-        const srcWidth = capturedCanvas.width;
-        const srcHeight = capturedCanvas.height;
-        const scaleX = outputWidth / srcWidth;
-        const scaleY = outputHeight / srcHeight;
-        const scale = Math.min(scaleX, scaleY);
+        // Scale konten agar muat di canvas 16:9
+        const scale = Math.min(outputWidth / srcW, outputHeight / srcH);
+        const drawW = srcW * scale;
+        const drawH = srcH * scale;
+        const offsetX = (outputWidth - drawW) / 2;
+        const offsetY = (outputHeight - drawH) / 2;
 
-        const drawWidth = srcWidth * scale;
-        const drawHeight = srcHeight * scale;
-        const offsetX = (outputWidth - drawWidth) / 2;
-        const offsetY = (outputHeight - drawHeight) / 2;
-
-        ctx.drawImage(capturedCanvas, offsetX, offsetY, drawWidth, drawHeight);
+        ctx.drawImage(capturedCanvas, offsetX, offsetY, drawW, drawH);
 
         // Download
         const link = document.createElement('a');
@@ -269,8 +265,6 @@ function saveAsImage(format) {
         }
 
         link.click();
-
-        // Reset button
         btn.innerHTML = originalText;
         btn.disabled = false;
     }).catch(err => {
