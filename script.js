@@ -1,307 +1,466 @@
-// Set default date to today
 document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('activity-date').value = today;
+    document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
 });
 
-// Add a new activity row
 function addRow(containerId) {
     const container = document.getElementById(containerId);
     const row = document.createElement('div');
     row.className = 'activity-row';
-    row.innerHTML = `
-        <input type="text" placeholder="Nama aktivitas..." class="activity-input">
-        <select class="category-select">
-            <option value="REGULER">REGULER</option>
-            <option value="PROJECT">PROJECT</option>
-            <option value="ADDITIONAL">ADDITIONAL</option>
-        </select>
-        <button class="btn-remove" onclick="removeRow(this)">&#10005;</button>
-    `;
+    row.innerHTML = `<input type="text" placeholder="Nama aktivitas..." class="activity-input"><select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select><button class="btn-remove" onclick="removeRow(this)">&#10005;</button>`;
     container.appendChild(row);
 }
 
-// Remove an activity row
 function removeRow(btn) {
     const row = btn.parentElement;
-    const container = row.parentElement;
-    if (container.children.length > 1) {
-        row.remove();
-    }
+    if (row.parentElement.children.length > 1) row.remove();
 }
 
-// Division configuration
 const divisions = [
-    { id: 'nrm-activities', name: 'NRM', icon: '&#127793;', bgClass: 'nrm-bg' },
-    { id: 'cs-activities', name: 'CS', icon: '&#128172;', bgClass: 'cs-bg' },
-    { id: 'utility-activities', name: 'UTILITY', icon: '&#128295;', bgClass: 'utility-bg' },
-    { id: 'ts-activities', name: 'TS', icon: '&#128225;', bgClass: 'ts-bg' },
-    { id: 'ga-activities', name: 'GA Internal', icon: '&#9881;', bgClass: 'ga-bg' }
+    { id: 'nrm-activities', name: 'NRM', prefix: 'nrm', icon: '&#127793;', bg: '#1a5c2e' },
+    { id: 'cs-activities', name: 'CS', prefix: 'cs', icon: '&#128172;', bg: '#1a3a6b' },
+    { id: 'utility-activities', name: 'UTILITY', prefix: 'utility', icon: '&#128295;', bg: '#b8860b' },
+    { id: 'ts-activities', name: 'TS', prefix: 'ts', icon: '&#128225;', bg: '#4a0e8f' },
+    { id: 'ga-activities', name: 'GA Internal', prefix: 'ga', icon: '&#9881;', bg: '#8b0000' }
 ];
 
-// Format date to Indonesian
 function formatDate(dateStr) {
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    const date = new Date(dateStr);
-    const day = days[date.getDay()];
-    const d = date.getDate();
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    return `${day}, ${d} ${month} ${year}`;
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const d = new Date(dateStr);
+    return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
-// Generate the report
 function generateReport() {
     const dateVal = document.getElementById('activity-date').value;
-    if (!dateVal) {
-        alert('Pilih tanggal terlebih dahulu!');
-        return;
-    }
+    if (!dateVal) { alert('Pilih tanggal!'); return; }
 
     let allActivities = [];
-    let divisionData = [];
+    let divData = [];
 
     divisions.forEach(div => {
-        const container = document.getElementById(div.id);
-        const rows = container.querySelectorAll('.activity-row');
-        let activities = [];
-
+        const rows = document.getElementById(div.id).querySelectorAll('.activity-row');
+        let acts = [];
         rows.forEach(row => {
-            const input = row.querySelector('.activity-input').value.trim();
-            const category = row.querySelector('.category-select').value;
-            if (input) {
-                activities.push({ name: input, category: category });
-                allActivities.push({ name: input, category: category });
-            }
+            const name = row.querySelector('.activity-input').value.trim();
+            const cat = row.querySelector('.category-select').value;
+            if (name) { acts.push({ name, category: cat }); allActivities.push({ name, category: cat, dept: div.name }); }
         });
 
-        if (activities.length > 0) {
-            divisionData.push({ ...div, activities: activities });
-        }
+        // Get manual card inputs
+        const label = document.getElementById(div.prefix + '-label').value.trim();
+        const desc = document.getElementById(div.prefix + '-desc').value.trim();
+        const tag = document.getElementById(div.prefix + '-tag').value.trim();
+
+        divData.push({
+            ...div, activities: acts,
+            reguler: acts.filter(a => a.category === 'REGULER').length,
+            project: acts.filter(a => a.category === 'PROJECT').length,
+            additional: acts.filter(a => a.category === 'ADDITIONAL').length,
+            cardLabel: label, cardDesc: desc, cardTag: tag
+        });
     });
 
-    if (allActivities.length === 0) {
-        alert('Isi minimal 1 aktivitas!');
-        return;
-    }
+    if (allActivities.length === 0) { alert('Isi minimal 1 aktivitas!'); return; }
 
     const total = allActivities.length;
     const reguler = allActivities.filter(a => a.category === 'REGULER').length;
     const project = allActivities.filter(a => a.category === 'PROJECT').length;
     const additional = allActivities.filter(a => a.category === 'ADDITIONAL').length;
-
     const regulerPct = Math.round((reguler / total) * 100);
     const projectPct = Math.round((project / total) * 100);
-    const additionalPct = Math.round((additional / total) * 100);
+    const additionalPct = 100 - regulerPct - projectPct;
 
-    document.getElementById('report-title').textContent = `DAILY ACTIVITY GA \u2013 ${formatDate(dateVal)}`;
+    document.getElementById('report-title').textContent = `GA DAILY ACTIVITY ANALYSIS \u2013 ${formatDate(dateVal)}`;
+    document.getElementById('legend-reguler').textContent = reguler;
+    document.getElementById('legend-project').textContent = project;
+    document.getElementById('legend-additional').textContent = additional;
+    document.getElementById('summary-total').textContent = total;
 
-    const outputDiv = document.getElementById('divisions-output');
-    outputDiv.innerHTML = '';
+    drawDonut(reguler, project, additional, total, regulerPct, projectPct, additionalPct);
+    drawBarChart(divData);
+    renderKeyNotes();
+    generateDeptCards(divData);
 
-    const bgColors = {
-        'nrm-bg': 'linear-gradient(135deg, #1a5c2e, #2d8a4e)',
-        'cs-bg': 'linear-gradient(135deg, #1a3a6b, #2a5aa8)',
-        'utility-bg': 'linear-gradient(135deg, #b8860b, #d4a017)',
-        'ts-bg': 'linear-gradient(135deg, #4a0e8f, #7b2ff7)',
-        'ga-bg': 'linear-gradient(135deg, #8b0000, #c0392b)'
-    };
-
-    divisionData.forEach(div => {
-        const card = document.createElement('div');
-        card.className = 'division-card';
-
-        let activitiesHtml = div.activities.map(a => {
-            const badgeClass = `badge-${a.category.toLowerCase()}`;
-            return `<li><span class="act-name">\u2022 ${a.name}</span><span class="badge ${badgeClass}">${a.category}</span></li>`;
-        }).join('');
-
-        card.innerHTML = `
-            <div class="division-card-label" style="background: ${bgColors[div.bgClass]}">
-                <span class="card-icon">${div.icon}</span>
-                <span class="card-name">${div.name}</span>
-            </div>
-            <div class="division-card-content">
-                <ul>${activitiesHtml}</ul>
-            </div>
-        `;
-        outputDiv.appendChild(card);
-    });
-
-    document.getElementById('stat-total').textContent = total;
-    document.getElementById('stat-reguler').textContent = reguler;
-    document.getElementById('stat-project').textContent = project;
-    document.getElementById('stat-additional').textContent = additional;
-    document.getElementById('stat-reguler-pct').textContent = `\u25CF ${regulerPct}%`;
-    document.getElementById('stat-project-pct').textContent = `\u25CF ${projectPct}%`;
-    document.getElementById('stat-additional-pct').textContent = `\u25CF ${additionalPct}%`;
-
-    drawPieChart(reguler, project, additional, total);
+    // Generate Page 2
+    generatePage2(divData, total, reguler, project, additional, regulerPct, projectPct, additionalPct, dateVal);
 
     document.getElementById('form-section').style.display = 'none';
     document.getElementById('report-section').style.display = 'block';
+    switchPage('page1');
 }
 
-// Draw pie chart
-function drawPieChart(reguler, project, additional, total) {
-    const canvas = document.getElementById('pieChart');
+function drawDonut(reguler, project, additional, total, rPct, pPct, aPct) {
+    const canvas = document.getElementById('donutChart');
     const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = 120;
-
+    const cx = canvas.width / 2, cy = canvas.height / 2;
+    const outerR = 120, innerR = 70;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const data = [
-        { value: reguler, color: '#c0392b' },
-        { value: project, color: '#27ae60' },
-        { value: additional, color: '#f39c12' }
-    ].filter(d => d.value > 0);
+    const segments = [
+        { value: reguler, color: '#c0392b', pct: rPct },
+        { value: project, color: '#27ae60', pct: pPct },
+        { value: additional, color: '#f39c12', pct: aPct }
+    ].filter(s => s.value > 0);
 
     let startAngle = -Math.PI / 2;
-
-    data.forEach(segment => {
-        const sliceAngle = (segment.value / total) * 2 * Math.PI;
-        const endAngle = startAngle + sliceAngle;
-
+    segments.forEach(seg => {
+        const slice = (seg.value / total) * 2 * Math.PI;
+        const end = startAngle + slice;
         ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.arc(cx, cy, outerR, startAngle, end);
+        ctx.arc(cx, cy, innerR, end, startAngle, true);
         ctx.closePath();
-        ctx.fillStyle = segment.color;
+        ctx.fillStyle = seg.color;
         ctx.fill();
 
-        const midAngle = startAngle + sliceAngle / 2;
-        const labelX = centerX + Math.cos(midAngle) * radius * 0.65;
-        const labelY = centerY + Math.sin(midAngle) * radius * 0.65;
-        const pct = Math.round((segment.value / total) * 100);
-
-        if (pct > 0) {
+        const mid = startAngle + slice / 2;
+        const lx = cx + Math.cos(mid) * ((outerR + innerR) / 2);
+        const ly = cy + Math.sin(mid) * ((outerR + innerR) / 2);
+        if (seg.pct >= 5) {
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 16px Poppins, sans-serif';
+            ctx.font = 'bold 14px Poppins';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(`${pct}%`, labelX, labelY);
+            ctx.fillText(seg.pct + '%', lx, ly);
         }
+        startAngle = end;
+    });
 
-        startAngle = endAngle;
+    ctx.fillStyle = '#333';
+    ctx.font = '600 13px Poppins';
+    ctx.textAlign = 'center';
+    ctx.fillText('TOTAL:', cx, cy - 12);
+    ctx.font = '900 32px Poppins';
+    ctx.fillText(total, cx, cy + 18);
+}
+
+function drawBarChart(divData) {
+    const canvas = document.getElementById('barChart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const maxVal = Math.max(...divData.map(d => d.reguler + d.project + d.additional), 1);
+    // Round up max to nearest nice number for Y-axis
+    const niceMax = Math.ceil(maxVal / 2) * 2; // always even number
+    const leftPad = 35;
+    const barAreaWidth = canvas.width - leftPad - 10;
+    const barW = 55;
+    const gap = (barAreaWidth - barW * divData.length) / (divData.length + 1);
+    const chartH = 165;
+    const topPad = 25;
+    const bottomPad = 25;
+
+    // Draw Y-axis grid lines & labels (integers only)
+    const ySteps = Math.min(niceMax, 5);
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#888';
+    ctx.font = '600 10px Poppins';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i <= ySteps; i++) {
+        const val = Math.round((niceMax / ySteps) * i);
+        const yPos = topPad + chartH - (val / niceMax) * chartH;
+        // Grid line
+        ctx.beginPath();
+        ctx.moveTo(leftPad, yPos);
+        ctx.lineTo(canvas.width - 10, yPos);
+        ctx.stroke();
+        // Label
+        ctx.fillText(val, leftPad - 5, yPos);
+    }
+
+    // Draw bars
+    ctx.textAlign = 'center';
+    divData.forEach((d, i) => {
+        const x = leftPad + gap + i * (barW + gap);
+        const totalAct = d.reguler + d.project + d.additional;
+        const totalH = (totalAct / niceMax) * chartH;
+        let y = topPad + chartH - totalH;
+
+        // Reguler bar
+        const rH = (d.reguler / niceMax) * chartH;
+        if (rH > 0) { ctx.fillStyle = '#c0392b'; ctx.fillRect(x, y, barW, rH); y += rH; }
+        // Project bar
+        const pH = (d.project / niceMax) * chartH;
+        if (pH > 0) { ctx.fillStyle = '#27ae60'; ctx.fillRect(x, y, barW, pH); y += pH; }
+        // Additional bar
+        const aH = (d.additional / niceMax) * chartH;
+        if (aH > 0) { ctx.fillStyle = '#f39c12'; ctx.fillRect(x, y, barW, aH); }
+
+        // Department name label
+        ctx.fillStyle = '#333';
+        ctx.font = '600 11px Poppins';
+        ctx.fillText(d.name, x + barW / 2, topPad + chartH + bottomPad - 8);
+
+        // Total value on top of bar
+        if (totalAct > 0) {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.font = 'bold 12px Poppins';
+            ctx.fillText(totalAct, x + barW / 2, topPad + chartH - totalH - 8);
+        }
     });
 }
 
-// Save report as image 16:9 - responsive to content (no clipping)
+function renderKeyNotes() {
+    const raw = document.getElementById('key-notes-input').value.trim();
+    const list = document.getElementById('key-notes-list');
+    list.innerHTML = '';
+
+    if (!raw) {
+        list.innerHTML = '<li>No analysis notes provided.</li>';
+        return;
+    }
+
+    const lines = raw.split('\n').filter(l => l.trim());
+    lines.forEach(line => {
+        const li = document.createElement('li');
+        // Bold text before colon
+        const colonIdx = line.indexOf(':');
+        if (colonIdx > 0) {
+            li.innerHTML = `<strong>${line.substring(0, colonIdx + 1)}</strong>${line.substring(colonIdx + 1)}`;
+        } else {
+            li.textContent = line;
+        }
+        list.appendChild(li);
+    });
+}
+
+function generateDeptCards(divData) {
+    const container = document.getElementById('dept-cards');
+    container.innerHTML = '';
+
+    const tagColors = ['tag-yellow', 'tag-purple', 'tag-red', 'tag-blue', 'tag-green'];
+
+    divData.forEach((d, i) => {
+        if (d.activities.length === 0) return;
+        const card = document.createElement('div');
+        card.className = 'dept-card';
+
+        const label = d.cardLabel || d.name.toUpperCase();
+        const desc = d.cardDesc || `${d.activities.length} aktivitas hari ini`;
+        const tag = d.cardTag;
+        const tagClass = tagColors[i % tagColors.length];
+
+        card.innerHTML = `
+            <div class="dept-card-header" style="background:${d.bg}">
+                <span>${d.icon}</span>
+                <span>${d.name.toUpperCase()}</span>
+            </div>
+            <div class="dept-card-body">
+                <strong>${label}</strong>
+                <span class="dept-desc">Diringkas: ${desc}</span>
+                ${tag ? `<span class="dept-card-tag ${tagClass}">${tag}</span>` : ''}
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Save as image
 function saveAsImage(format) {
-    const reportContainer = document.getElementById('report-container');
-    const reportBody = reportContainer.querySelector('.report-body');
-    const reportLeft = reportContainer.querySelector('.report-left');
+    const el = document.getElementById('report-container');
     const btn = event.currentTarget;
-    const originalText = btn.innerHTML;
+    const orig = btn.innerHTML;
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Temporarily remove any overflow/height constraints so all content is visible
-    const origContainerStyle = reportContainer.style.cssText;
-    const origBodyStyle = reportBody.style.cssText;
-    const origLeftStyle = reportLeft.style.cssText;
+    const origStyle = el.style.cssText;
+    el.style.width = '1400px';
+    el.style.height = 'auto';
+    el.style.overflow = 'visible';
 
-    reportContainer.style.width = '1280px';
-    reportContainer.style.height = 'auto';
-    reportContainer.style.minHeight = 'auto';
-    reportContainer.style.overflow = 'visible';
-    reportBody.style.overflow = 'visible';
-    reportBody.style.height = 'auto';
-    reportLeft.style.overflow = 'visible';
-    reportLeft.style.height = 'auto';
-
-    // Wait for reflow
     setTimeout(() => {
-        html2canvas(reportContainer, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff',
-            logging: false,
-            width: reportContainer.scrollWidth,
-            height: reportContainer.scrollHeight,
-            windowWidth: reportContainer.scrollWidth + 100,
-            windowHeight: reportContainer.scrollHeight + 100
-        }).then(capturedCanvas => {
-            // Restore original styles
-            reportContainer.style.cssText = origContainerStyle;
-            reportBody.style.cssText = origBodyStyle;
-            reportLeft.style.cssText = origLeftStyle;
-            // Tentukan ukuran output 16:9
+        html2canvas(el, {
+            scale: 2, useCORS: true, backgroundColor: '#dfe6ed', logging: false,
+            width: el.scrollWidth, height: el.scrollHeight,
+            windowWidth: el.scrollWidth + 50, windowHeight: el.scrollHeight + 50
+        }).then(captured => {
+            el.style.cssText = origStyle;
+
             const ratio = 16 / 9;
-            const srcW = capturedCanvas.width;
-            const srcH = capturedCanvas.height;
-            const srcRatio = srcW / srcH;
+            const srcW = captured.width, srcH = captured.height;
+            let outW, outH;
+            if (srcW / srcH >= ratio) { outW = srcW; outH = Math.round(srcW / ratio); }
+            else { outH = srcH; outW = Math.round(srcH * ratio); }
+            if (outW < 1920) { const s = 1920 / outW; outW = 1920; outH = Math.round(outH * s); }
 
-            let outputWidth, outputHeight;
+            const final = document.createElement('canvas');
+            final.width = outW; final.height = outH;
+            const ctx = final.getContext('2d');
+            ctx.fillStyle = '#dfe6ed';
+            ctx.fillRect(0, 0, outW, outH);
 
-            if (srcRatio >= ratio) {
-                outputWidth = srcW;
-                outputHeight = Math.round(srcW / ratio);
-            } else {
-                outputHeight = srcH;
-                outputWidth = Math.round(srcH * ratio);
-            }
+            const scale = Math.min(outW / srcW, outH / srcH);
+            const dW = srcW * scale, dH = srcH * scale;
+            ctx.drawImage(captured, (outW - dW) / 2, (outH - dH) / 2, dW, dH);
 
-            // Minimum 1920x1080
-            if (outputWidth < 1920) {
-                const upscale = 1920 / outputWidth;
-                outputWidth = 1920;
-                outputHeight = Math.round(outputHeight * upscale);
-            }
-
-            const finalCanvas = document.createElement('canvas');
-            finalCanvas.width = outputWidth;
-            finalCanvas.height = outputHeight;
-            const ctx = finalCanvas.getContext('2d');
-
-            // Background putih
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, outputWidth, outputHeight);
-
-            // Scale konten agar muat di canvas 16:9
-            const scale = Math.min(outputWidth / srcW, outputHeight / srcH);
-            const drawW = srcW * scale;
-            const drawH = srcH * scale;
-            const offsetX = (outputWidth - drawW) / 2;
-            const offsetY = (outputHeight - drawH) / 2;
-
-            ctx.drawImage(capturedCanvas, offsetX, offsetY, drawW, drawH);
-
-            // Download
             const link = document.createElement('a');
-            const dateVal = document.getElementById('activity-date').value;
-            const fileName = `Daily_Activity_GA_${dateVal}`;
-
-            if (format === 'png') {
-                link.download = `${fileName}.png`;
-                link.href = finalCanvas.toDataURL('image/png');
-            } else {
-                link.download = `${fileName}.jpg`;
-                link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
-            }
-
+            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}`;
+            if (format === 'png') { link.download = fn + '.png'; link.href = final.toDataURL('image/png'); }
+            else { link.download = fn + '.jpg'; link.href = final.toDataURL('image/jpeg', 0.95); }
             link.click();
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
-            // Restore original styles on error too
-            reportContainer.style.cssText = origContainerStyle;
-            reportBody.style.cssText = origBodyStyle;
-            reportLeft.style.cssText = origLeftStyle;
-            alert('Gagal menyimpan gambar. Coba lagi.');
-            console.error(err);
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            el.style.cssText = origStyle;
+            alert('Gagal menyimpan.'); console.error(err);
+            btn.innerHTML = orig; btn.disabled = false;
         });
     }, 100);
 }
 
-// Go back to form
 function goBack() {
     document.getElementById('form-section').style.display = 'block';
     document.getElementById('report-section').style.display = 'none';
+}
+
+
+// ===== PAGE 2: ACTIVITY LIST =====
+let cachedDivData = [];
+
+function generatePage2(divData, total, reguler, project, additional, regulerPct, projectPct, additionalPct, dateVal) {
+    cachedDivData = divData;
+
+    // Title
+    document.getElementById('report-title-p2').textContent = `DAILY ACTIVITY GA \u2013 ${formatDate(dateVal)}`;
+
+    // Activity Cards
+    const output = document.getElementById('activity-list-output');
+    output.innerHTML = '';
+
+    divData.forEach(d => {
+        if (d.activities.length === 0) return;
+        const card = document.createElement('div');
+        card.className = 'div-activity-card';
+
+        let listHtml = d.activities.map(a => {
+            const cls = a.category === 'REGULER' ? 'b-reguler' : a.category === 'PROJECT' ? 'b-project' : 'b-additional';
+            return `<li><span>\u2022 ${a.name}</span><span class="badge-p2 ${cls}">${a.category}</span></li>`;
+        }).join('');
+
+        card.innerHTML = `
+            <div class="div-activity-label" style="background:${d.bg}">
+                <span class="dv-icon">${d.icon}</span>
+                <span>${d.name}</span>
+            </div>
+            <div class="div-activity-content"><ul>${listHtml}</ul></div>
+        `;
+        output.appendChild(card);
+    });
+
+    // Stats
+    document.getElementById('p2-total').textContent = total;
+    document.getElementById('p2-reguler').textContent = reguler;
+    document.getElementById('p2-project').textContent = project;
+    document.getElementById('p2-additional').textContent = additional;
+    document.getElementById('p2-reguler-pct').textContent = `\u25CF ${regulerPct}%`;
+    document.getElementById('p2-project-pct').textContent = `\u25CF ${projectPct}%`;
+    document.getElementById('p2-additional-pct').textContent = `\u25CF ${additionalPct}%`;
+
+    // Pie Chart
+    drawPieP2(reguler, project, additional, total);
+}
+
+function drawPieP2(reguler, project, additional, total) {
+    const canvas = document.getElementById('pieChartP2');
+    const ctx = canvas.getContext('2d');
+    const cx = canvas.width / 2, cy = canvas.height / 2, r = 110;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const segs = [
+        { value: reguler, color: '#c0392b' },
+        { value: project, color: '#27ae60' },
+        { value: additional, color: '#f39c12' }
+    ].filter(s => s.value > 0);
+
+    let start = -Math.PI / 2;
+    segs.forEach(seg => {
+        const slice = (seg.value / total) * 2 * Math.PI;
+        const end = start + slice;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, start, end);
+        ctx.closePath();
+        ctx.fillStyle = seg.color;
+        ctx.fill();
+
+        const mid = start + slice / 2;
+        const pct = Math.round((seg.value / total) * 100);
+        if (pct > 0) {
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 15px Poppins';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(pct + '%', cx + Math.cos(mid) * r * 0.6, cy + Math.sin(mid) * r * 0.6);
+        }
+        start = end;
+    });
+}
+
+// ===== PAGE SWITCHING =====
+let currentPage = 'page1';
+
+function switchPage(pageId) {
+    document.getElementById('page1').style.display = pageId === 'page1' ? 'block' : 'none';
+    document.getElementById('page2').style.display = pageId === 'page2' ? 'block' : 'none';
+    currentPage = pageId;
+
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && pageId === 'page1') || (i === 1 && pageId === 'page2'));
+    });
+}
+
+// ===== SAVE CURRENT PAGE =====
+function saveCurrentPage(format) {
+    const containerId = currentPage === 'page1' ? 'report-container-page1' : 'report-container-page2';
+    const el = document.getElementById(containerId);
+    const btn = event.currentTarget;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '\u23F3 Menyimpan...';
+    btn.disabled = true;
+
+    const origStyle = el.style.cssText;
+    el.style.width = '1400px';
+    el.style.height = 'auto';
+    el.style.overflow = 'visible';
+
+    setTimeout(() => {
+        html2canvas(el, {
+            scale: 2, useCORS: true, backgroundColor: '#dfe6ed', logging: false,
+            width: el.scrollWidth, height: el.scrollHeight,
+            windowWidth: el.scrollWidth + 50, windowHeight: el.scrollHeight + 50
+        }).then(captured => {
+            el.style.cssText = origStyle;
+
+            const ratio = 16 / 9;
+            const srcW = captured.width, srcH = captured.height;
+            let outW, outH;
+            if (srcW / srcH >= ratio) { outW = srcW; outH = Math.round(srcW / ratio); }
+            else { outH = srcH; outW = Math.round(srcH * ratio); }
+            if (outW < 1920) { const s = 1920 / outW; outW = 1920; outH = Math.round(outH * s); }
+
+            const final = document.createElement('canvas');
+            final.width = outW; final.height = outH;
+            const ctx = final.getContext('2d');
+            ctx.fillStyle = '#dfe6ed';
+            ctx.fillRect(0, 0, outW, outH);
+
+            const scale = Math.min(outW / srcW, outH / srcH);
+            const dW = srcW * scale, dH = srcH * scale;
+            ctx.drawImage(captured, (outW - dW) / 2, (outH - dH) / 2, dW, dH);
+
+            const link = document.createElement('a');
+            const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
+            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
+            if (format === 'png') { link.download = fn + '.png'; link.href = final.toDataURL('image/png'); }
+            else { link.download = fn + '.jpg'; link.href = final.toDataURL('image/jpeg', 0.95); }
+            link.click();
+            btn.innerHTML = orig; btn.disabled = false;
+        }).catch(err => {
+            el.style.cssText = origStyle;
+            alert('Gagal menyimpan.'); console.error(err);
+            btn.innerHTML = orig; btn.disabled = false;
+        });
+    }, 100);
 }
