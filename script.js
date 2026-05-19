@@ -417,64 +417,73 @@ function saveCurrentPage(format) {
     const el = document.getElementById(containerId);
     const btn = event.currentTarget;
     const orig = btn.innerHTML;
+
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Clone element ke offscreen
-    const clone = el.cloneNode(true);
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.width = '1400px';
-    clone.style.height = 'auto';
-    clone.style.overflow = 'visible';
-    clone.style.zIndex = '-1';
-    clone.style.display = 'block';
-    clone.style.visibility = 'visible';
-    document.body.appendChild(clone);
+    // Capture elemen asli, bukan clone offscreen.
+    // html2canvas rawan menghasilkan gambar putih saat target diposisikan jauh di luar viewport (left: -9999px).
+    const originalStyle = el.style.cssText;
+    el.style.width = '1400px';
+    el.style.height = 'auto';
+    el.style.overflow = 'visible';
+    el.style.animation = 'none';
 
-    // CRITICAL: Copy canvas bitmap dari original ke clone
-    // cloneNode() TIDAK copy isi pixel canvas, hanya struktur HTML
-    const origCanvases = el.querySelectorAll('canvas');
-    const cloneCanvases = clone.querySelectorAll('canvas');
-    origCanvases.forEach((origCanvas, i) => {
-        if (cloneCanvases[i] && origCanvas.width > 0 && origCanvas.height > 0) {
-            cloneCanvases[i].width = origCanvas.width;
-            cloneCanvases[i].height = origCanvas.height;
-            const ctx = cloneCanvases[i].getContext('2d');
-            ctx.drawImage(origCanvas, 0, 0);
-        }
+    // Matikan animasi sementara agar html2canvas tidak menangkap state transisi/fade.
+    const animatedElements = el.querySelectorAll('*');
+    const originalAnimations = Array.from(animatedElements).map(node => ({
+        node,
+        animation: node.style.animation,
+        transition: node.style.transition
+    }));
+    animatedElements.forEach(node => {
+        node.style.animation = 'none';
+        node.style.transition = 'none';
     });
 
-    setTimeout(() => {
-        html2canvas(clone, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            logging: false,
-            width: 1400,
-            windowWidth: 1400
-        }).then(captured => {
-            if (clone.parentNode) document.body.removeChild(clone);
-
-            const link = document.createElement('a');
-            const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
-            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
-            if (format === 'png') {
-                link.download = fn + '.png';
-                link.href = captured.toDataURL('image/png');
-            } else {
-                link.download = fn + '.jpg';
-                link.href = captured.toDataURL('image/jpeg', 0.95);
-            }
-            link.click();
-            btn.innerHTML = orig; btn.disabled = false;
-        }).catch(err => {
-            if (clone.parentNode) document.body.removeChild(clone);
-            alert('Gagal menyimpan. Coba lagi.');
-            console.error(err);
-            btn.innerHTML = orig; btn.disabled = false;
+    const restoreState = () => {
+        el.style.cssText = originalStyle;
+        originalAnimations.forEach(({ node, animation, transition }) => {
+            node.style.animation = animation;
+            node.style.transition = transition;
         });
-    }, 400);
+        btn.innerHTML = orig;
+        btn.disabled = false;
+    };
+
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            html2canvas(el, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#dfe6ed',
+                logging: false,
+                width: el.scrollWidth,
+                height: el.scrollHeight,
+                windowWidth: el.scrollWidth,
+                windowHeight: el.scrollHeight,
+                scrollX: 0,
+                scrollY: -window.scrollY
+            }).then(captured => {
+                const link = document.createElement('a');
+                const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
+                const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
+
+                if (format === 'png') {
+                    link.download = fn + '.png';
+                    link.href = captured.toDataURL('image/png');
+                } else {
+                    link.download = fn + '.jpg';
+                    link.href = captured.toDataURL('image/jpeg', 0.95);
+                }
+
+                link.click();
+                restoreState();
+            }).catch(err => {
+                console.error(err);
+                alert('Gagal menyimpan. Coba lagi.');
+                restoreState();
+            });
+        }, 100);
+    });
 }
