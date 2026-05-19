@@ -122,67 +122,72 @@
 
     <!-- OUTPUT REPORT -->
     <div id="report-section" style="display:none;">
-        <div class="report-container" id="report-container">
-            <!-- Header -->
-            <div class="report-header">
-                <div class="header-line"></div>
-                <h1 id="report-title">DAILY ACTIVITY GA – Jumat, 15 Mei 2026</h1>
-                <div class="header-line"></div>
-            </div>
-
-            <div class="report-body">
-                <div class="report-left">
-                    <!-- Division sections will be injected here -->
-                    <div id="divisions-output"></div>
-                </div>
-                <div class="report-right">
-                    <canvas id="pieChart" width="300" height="300"></canvas>
-                    <div class="stats-box">
-                        <h3>STATISTIK AKTIVITAS</h3>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <span class="stat-label">TOTAL AKTIVITAS</span>
-                                <span class="stat-value" id="stat-total">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">REGULER</span>
-                                <span class="stat-value stat-red" id="stat-reguler">0</span>
-                                <span class="stat-percent" id="stat-reguler-pct">0%</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">PROJECT</span>
-                                <span class="stat-value stat-green" id="stat-project">0</span>
-                                <span class="stat-percent" id="stat-project-pct">0%</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">ADDITIONAL</span>
-                                <span class="stat-value stat-yellow" id="stat-additional">0</span>
-                                <span class="stat-percent" id="stat-additional-pct">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="legend-box">
-                        <div class="legend-item">
-                            <span class="legend-icon reguler-icon">&#128203;</span>
-                            <span>REGULER</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-icon project-icon">&#128196;</span>
-                            <span>PROJECT</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-icon additional-icon">&#10133;</span>
-                            <span>ADDITIONAL</span>
-                        </div>
-                    </div>
-                </div>
+        <!-- TOOLBAR SAVE - FIXED DI ATAS -->
+        <div class="save-toolbar">
+            <button class="btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
+            <div class="save-buttons">
+                <button class="btn-save-png" onclick="saveAsImage('png')">&#128247; SAVE PNG</button>
+                <button class="btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; SAVE JPG</button>
+                <button class="btn-print" onclick="window.print()">&#128424; Print PDF</button>
             </div>
         </div>
-        <div class="report-actions">
-            <button class="btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
-            <button class="btn-save-png" onclick="saveAsImage('png')">&#128247; Save PNG</button>
-            <button class="btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; Save JPG</button>
-            <button class="btn-print" onclick="window.print()">&#128424; Print / Save PDF</button>
+
+        <!-- REPORT CONTAINER - ini yang di-capture jadi gambar 16:9 -->
+        <div class="report-wrapper">
+            <div class="report-container" id="report-container">
+                <!-- Header -->
+                <div class="report-header">
+                    <h1 id="report-title">DAILY ACTIVITY GA – Jumat, 15 Mei 2026</h1>
+                </div>
+
+                <div class="report-body">
+                    <div class="report-left">
+                        <!-- Division sections will be injected here -->
+                        <div id="divisions-output"></div>
+                    </div>
+                    <div class="report-right">
+                        <canvas id="pieChart" width="300" height="300"></canvas>
+                        <div class="stats-box">
+                            <h3>STATISTIK AKTIVITAS</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">TOTAL AKTIVITAS</span>
+                                    <span class="stat-value" id="stat-total">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">REGULER</span>
+                                    <span class="stat-value stat-red" id="stat-reguler">0</span>
+                                    <span class="stat-percent" id="stat-reguler-pct">0%</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">PROJECT</span>
+                                    <span class="stat-value stat-green" id="stat-project">0</span>
+                                    <span class="stat-percent" id="stat-project-pct">0%</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">ADDITIONAL</span>
+                                    <span class="stat-value stat-yellow" id="stat-additional">0</span>
+                                    <span class="stat-percent" id="stat-additional-pct">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="legend-box">
+                            <div class="legend-item">
+                                <span class="legend-icon reguler-icon">&#128203;</span>
+                                <span>REGULER</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-icon project-icon">&#128196;</span>
+                                <span>PROJECT</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-icon additional-icon">&#10133;</span>
+                                <span>ADDITIONAL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
