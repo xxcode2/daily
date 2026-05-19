@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Activity GA</title>
+    <title>GA Daily Activity Analysis</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <!-- INPUT FORM -->
     <div id="form-section">
-        <h1 class="form-title">Daily Activity GA - Input Form</h1>
+        <h1 class="form-title">GA Daily Activity Analysis - Input Form</h1>
         
         <div class="date-input">
             <label for="activity-date">Tanggal:</label>
@@ -19,7 +19,7 @@
         </div>
 
         <!-- NRM -->
-        <div class="division-form" data-division="NRM">
+        <div class="division-form">
             <div class="division-header nrm-bg">
                 <span class="division-icon">&#127793;</span>
                 <span>NRM</span>
@@ -39,7 +39,7 @@
         </div>
 
         <!-- CS -->
-        <div class="division-form" data-division="CS">
+        <div class="division-form">
             <div class="division-header cs-bg">
                 <span class="division-icon">&#128172;</span>
                 <span>CS</span>
@@ -59,7 +59,7 @@
         </div>
 
         <!-- UTILITY -->
-        <div class="division-form" data-division="UTILITY">
+        <div class="division-form">
             <div class="division-header utility-bg">
                 <span class="division-icon">&#128295;</span>
                 <span>UTILITY</span>
@@ -79,7 +79,7 @@
         </div>
 
         <!-- TS -->
-        <div class="division-form" data-division="TS">
+        <div class="division-form">
             <div class="division-header ts-bg">
                 <span class="division-icon">&#128225;</span>
                 <span>TS</span>
@@ -99,7 +99,7 @@
         </div>
 
         <!-- GA Internal -->
-        <div class="division-form" data-division="GA Internal">
+        <div class="division-form">
             <div class="division-header ga-bg">
                 <span class="division-icon">&#9881;</span>
                 <span>GA Internal</span>
@@ -123,63 +123,59 @@
 
     <!-- OUTPUT REPORT -->
     <div id="report-section" style="display:none;">
-        <!-- REPORT CONTAINER -->
         <div class="report-wrapper">
             <div class="report-container" id="report-container">
+                <!-- Header -->
                 <div class="report-header">
-                    <h1 id="report-title">DAILY ACTIVITY GA - Selasa, 19 Mei 2026</h1>
+                    <h1 id="report-title">GA DAILY ACTIVITY ANALYSIS - Monday, May 18, 2026</h1>
                 </div>
 
-                <div class="report-body">
-                    <div class="report-left">
-                        <div id="divisions-output"></div>
-                    </div>
-                    <div class="report-right">
-                        <canvas id="pieChart" width="300" height="300"></canvas>
-                        <div class="stats-box">
-                            <h3>STATISTIK AKTIVITAS</h3>
-                            <div class="stats-grid">
-                                <div class="stat-item">
-                                    <span class="stat-label">TOTAL AKTIVITAS</span>
-                                    <span class="stat-value" id="stat-total">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">REGULER</span>
-                                    <span class="stat-value stat-red" id="stat-reguler">0</span>
-                                    <span class="stat-percent" id="stat-reguler-pct">0%</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">PROJECT</span>
-                                    <span class="stat-value stat-green" id="stat-project">0</span>
-                                    <span class="stat-percent" id="stat-project-pct">0%</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">ADDITIONAL</span>
-                                    <span class="stat-value stat-yellow" id="stat-additional">0</span>
-                                    <span class="stat-percent" id="stat-additional-pct">0%</span>
-                                </div>
+                <!-- Main Content: 2 panels -->
+                <div class="report-panels">
+                    <!-- LEFT PANEL: Donut Chart + Summary -->
+                    <div class="panel panel-left">
+                        <h3 class="panel-title">TOTAL ACTIVITY DISTRIBUTION</h3>
+                        <div class="donut-section">
+                            <canvas id="donutChart" width="280" height="280"></canvas>
+                            <div class="donut-legend">
+                                <div class="legend-row"><span class="dot dot-red"></span><strong>REGULAR:</strong> <span id="legend-reguler">0</span></div>
+                                <div class="legend-row"><span class="dot dot-green"></span><strong>PROJECT:</strong> <span id="legend-project">0</span></div>
+                                <div class="legend-row"><span class="dot dot-yellow"></span><strong>ADDITIONAL:</strong> <span id="legend-additional">0</span></div>
                             </div>
                         </div>
-                        <div class="legend-box">
-                            <div class="legend-item leg-reguler">
-                                <span>&#128203;</span>
-                                <span>REGULER</span>
+                        <div class="quantitative-summary">
+                            <h4>QUANTITATIVE SUMMARY</h4>
+                            <p>TOTAL ACTIVITIES: <strong id="summary-total">0</strong></p>
+                            <div class="summary-legend">
+                                <span class="dot dot-red"></span> REGULER
+                                <span class="dot dot-green"></span> PROJECT
+                                <span class="dot dot-yellow"></span> ADDITIONAL
                             </div>
-                            <div class="legend-item leg-project">
-                                <span>&#128196;</span>
-                                <span>PROJECT</span>
-                            </div>
-                            <div class="legend-item leg-additional">
-                                <span>&#10133;</span>
-                                <span>ADDITIONAL</span>
-                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT PANEL: Bar Chart + Key Notes -->
+                    <div class="panel panel-right">
+                        <h3 class="panel-title">OPERATIONAL BREAKDOWN BY DEPARTMENT</h3>
+                        <div class="bar-legend">
+                            <span><span class="sq sq-red"></span> Reguler</span>
+                            <span><span class="sq sq-green"></span> Project</span>
+                            <span><span class="sq sq-yellow"></span> Additional</span>
+                        </div>
+                        <canvas id="barChart" width="500" height="220"></canvas>
+                        <div class="key-notes">
+                            <h4>KEY ANALYSIS NOTES:</h4>
+                            <ul id="key-notes-list"></ul>
                         </div>
                     </div>
                 </div>
+
+                <!-- BOTTOM: Department Cards -->
+                <div class="dept-cards" id="dept-cards"></div>
             </div>
         </div>
 
-        <!-- TOMBOL AKSI DI BAWAH REPORT -->
+        <!-- Action Buttons -->
         <div class="report-actions">
             <button class="action-btn btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
             <button class="action-btn btn-save-png" onclick="saveAsImage('png')">&#128247; Save PNG</button>
