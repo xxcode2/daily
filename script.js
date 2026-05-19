@@ -367,44 +367,49 @@ function saveCurrentPage(btn, format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    const clone = el.cloneNode(true);
-    clone.style.position = 'fixed';
-    clone.style.top = '0';
-    clone.style.left = '0';
-    clone.style.width = '1400px';
-    clone.style.height = 'auto';
-    clone.style.overflow = 'visible';
-    clone.style.zIndex = '9999';
-    clone.style.opacity = '0';
-    clone.style.pointerEvents = 'none';
-    document.body.appendChild(clone);
+    // Disable animations temporarily so html2canvas captures final state
+    const style = document.createElement('style');
+    style.id = 'disable-animations';
+    style.textContent = '*, *::before, *::after { animation: none !important; transition: none !important; }';
+    document.head.appendChild(style);
 
-    const origCanvases = el.querySelectorAll('canvas');
-    const cloneCanvases = clone.querySelectorAll('canvas');
-    origCanvases.forEach((origCanvas, i) => {
-        if (cloneCanvases[i] && origCanvas.width > 0 && origCanvas.height > 0) {
-            cloneCanvases[i].width = origCanvas.width;
-            cloneCanvases[i].height = origCanvas.height;
-            const ctx = cloneCanvases[i].getContext('2d');
-            ctx.drawImage(origCanvas, 0, 0);
+    // Convert all canvas elements to inline images for reliable capture
+    const canvasElements = el.querySelectorAll('canvas');
+    const replacements = [];
+
+    canvasElements.forEach(canvas => {
+        if (canvas.width > 0 && canvas.height > 0) {
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
+            img.style.width = canvas.style.width || canvas.width + 'px';
+            img.style.height = canvas.style.height || canvas.height + 'px';
+            img.width = canvas.width;
+            img.height = canvas.height;
+            canvas.parentNode.insertBefore(img, canvas);
+            canvas.style.display = 'none';
+            replacements.push({ canvas, img });
         }
     });
 
+    // Small delay to let images render in DOM
     setTimeout(() => {
-        html2canvas(clone, {
+        html2canvas(el, {
             scale: 2,
             useCORS: true,
             allowTaint: true,
             backgroundColor: '#dfe6ed',
             logging: false,
-            width: clone.scrollWidth,
-            height: clone.scrollHeight,
-            windowWidth: clone.scrollWidth,
-            windowHeight: clone.scrollHeight,
             scrollX: 0,
-            scrollY: 0
+            scrollY: -window.scrollY
         }).then(captured => {
-            if (clone.parentNode) document.body.removeChild(clone);
+            // Restore canvases
+            replacements.forEach(({ canvas, img }) => {
+                canvas.style.display = '';
+                img.parentNode.removeChild(img);
+            });
+            // Re-enable animations
+            const s = document.getElementById('disable-animations');
+            if (s) s.remove();
 
             const link = document.createElement('a');
             const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
@@ -420,11 +425,19 @@ function saveCurrentPage(btn, format) {
             btn.innerHTML = orig;
             btn.disabled = false;
         }).catch(err => {
-            if (clone.parentNode) document.body.removeChild(clone);
+            // Restore canvases on error too
+            replacements.forEach(({ canvas, img }) => {
+                canvas.style.display = '';
+                if (img.parentNode) img.parentNode.removeChild(img);
+            });
+            // Re-enable animations
+            const s = document.getElementById('disable-animations');
+            if (s) s.remove();
+
             alert('Gagal menyimpan. Coba lagi.');
             console.error(err);
             btn.innerHTML = orig;
             btn.disabled = false;
         });
-    }, 50);
+    }, 100);
 }
