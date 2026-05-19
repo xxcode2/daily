@@ -140,28 +140,65 @@ function drawBarChart(divData) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const maxVal = Math.max(...divData.map(d => d.reguler + d.project + d.additional), 1);
-    const barW = 50, gap = (canvas.width - barW * divData.length) / (divData.length + 1);
-    const chartH = 180, offsetY = 10;
+    // Round up max to nearest nice number for Y-axis
+    const niceMax = Math.ceil(maxVal / 2) * 2; // always even number
+    const leftPad = 35;
+    const barAreaWidth = canvas.width - leftPad - 10;
+    const barW = 55;
+    const gap = (barAreaWidth - barW * divData.length) / (divData.length + 1);
+    const chartH = 165;
+    const topPad = 25;
+    const bottomPad = 25;
 
+    // Draw Y-axis grid lines & labels (integers only)
+    const ySteps = Math.min(niceMax, 5);
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#888';
+    ctx.font = '600 10px Poppins';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i <= ySteps; i++) {
+        const val = Math.round((niceMax / ySteps) * i);
+        const yPos = topPad + chartH - (val / niceMax) * chartH;
+        // Grid line
+        ctx.beginPath();
+        ctx.moveTo(leftPad, yPos);
+        ctx.lineTo(canvas.width - 10, yPos);
+        ctx.stroke();
+        // Label
+        ctx.fillText(val, leftPad - 5, yPos);
+    }
+
+    // Draw bars
+    ctx.textAlign = 'center';
     divData.forEach((d, i) => {
-        const x = gap + i * (barW + gap);
-        const totalH = ((d.reguler + d.project + d.additional) / maxVal) * chartH;
-        let y = offsetY + chartH - totalH;
-
-        const rH = (d.reguler / maxVal) * chartH;
-        ctx.fillStyle = '#c0392b'; ctx.fillRect(x, y, barW, rH); y += rH;
-        const pH = (d.project / maxVal) * chartH;
-        ctx.fillStyle = '#27ae60'; ctx.fillRect(x, y, barW, pH); y += pH;
-        const aH = (d.additional / maxVal) * chartH;
-        ctx.fillStyle = '#f39c12'; ctx.fillRect(x, y, barW, aH);
-
-        ctx.fillStyle = '#333'; ctx.font = '600 11px Poppins'; ctx.textAlign = 'center';
-        ctx.fillText(d.name, x + barW / 2, offsetY + chartH + 15);
-
+        const x = leftPad + gap + i * (barW + gap);
         const totalAct = d.reguler + d.project + d.additional;
+        const totalH = (totalAct / niceMax) * chartH;
+        let y = topPad + chartH - totalH;
+
+        // Reguler bar
+        const rH = (d.reguler / niceMax) * chartH;
+        if (rH > 0) { ctx.fillStyle = '#c0392b'; ctx.fillRect(x, y, barW, rH); y += rH; }
+        // Project bar
+        const pH = (d.project / niceMax) * chartH;
+        if (pH > 0) { ctx.fillStyle = '#27ae60'; ctx.fillRect(x, y, barW, pH); y += pH; }
+        // Additional bar
+        const aH = (d.additional / niceMax) * chartH;
+        if (aH > 0) { ctx.fillStyle = '#f39c12'; ctx.fillRect(x, y, barW, aH); }
+
+        // Department name label
+        ctx.fillStyle = '#333';
+        ctx.font = '600 11px Poppins';
+        ctx.fillText(d.name, x + barW / 2, topPad + chartH + bottomPad - 8);
+
+        // Total value on top of bar
         if (totalAct > 0) {
-            ctx.fillStyle = '#555'; ctx.font = 'bold 11px Poppins';
-            ctx.fillText(totalAct, x + barW / 2, offsetY + chartH - totalH - 5);
+            ctx.fillStyle = '#1a1a2e';
+            ctx.font = 'bold 12px Poppins';
+            ctx.fillText(totalAct, x + barW / 2, topPad + chartH - totalH - 8);
         }
     });
 }
