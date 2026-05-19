@@ -420,7 +420,7 @@ function saveCurrentPage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Clone element ke offscreen agar tidak terganggu scroll/viewport
+    // Clone element ke offscreen
     const clone = el.cloneNode(true);
     clone.style.position = 'absolute';
     clone.style.left = '-9999px';
@@ -429,17 +429,34 @@ function saveCurrentPage(format) {
     clone.style.height = 'auto';
     clone.style.overflow = 'visible';
     clone.style.zIndex = '-1';
+    clone.style.display = 'block';
+    clone.style.visibility = 'visible';
     document.body.appendChild(clone);
+
+    // CRITICAL: Copy canvas bitmap dari original ke clone
+    // cloneNode() TIDAK copy isi pixel canvas, hanya struktur HTML
+    const origCanvases = el.querySelectorAll('canvas');
+    const cloneCanvases = clone.querySelectorAll('canvas');
+    origCanvases.forEach((origCanvas, i) => {
+        if (cloneCanvases[i] && origCanvas.width > 0 && origCanvas.height > 0) {
+            cloneCanvases[i].width = origCanvas.width;
+            cloneCanvases[i].height = origCanvas.height;
+            const ctx = cloneCanvases[i].getContext('2d');
+            ctx.drawImage(origCanvas, 0, 0);
+        }
+    });
 
     setTimeout(() => {
         html2canvas(clone, {
             scale: 2,
             useCORS: true,
+            allowTaint: true,
             backgroundColor: '#ffffff',
-            logging: false
+            logging: false,
+            width: 1400,
+            windowWidth: 1400
         }).then(captured => {
-            // Hapus clone
-            document.body.removeChild(clone);
+            if (clone.parentNode) document.body.removeChild(clone);
 
             const link = document.createElement('a');
             const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
@@ -454,10 +471,10 @@ function saveCurrentPage(format) {
             link.click();
             btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
-            document.body.removeChild(clone);
+            if (clone.parentNode) document.body.removeChild(clone);
             alert('Gagal menyimpan. Coba lagi.');
             console.error(err);
             btn.innerHTML = orig; btn.disabled = false;
         });
-    }, 300);
+    }, 400);
 }
