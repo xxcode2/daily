@@ -420,18 +420,27 @@ function saveCurrentPage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Scroll to top first
-    window.scrollTo(0, 0);
+    // Clone element ke offscreen agar tidak terganggu scroll/viewport
+    const clone = el.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.width = '1400px';
+    clone.style.height = 'auto';
+    clone.style.overflow = 'visible';
+    clone.style.zIndex = '-1';
+    document.body.appendChild(clone);
 
     setTimeout(() => {
-        html2canvas(el, {
+        html2canvas(clone, {
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
-            logging: false,
-            scrollX: 0,
-            scrollY: -window.scrollY
+            logging: false
         }).then(captured => {
+            // Hapus clone
+            document.body.removeChild(clone);
+
             const link = document.createElement('a');
             const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
             const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
@@ -445,9 +454,10 @@ function saveCurrentPage(format) {
             link.click();
             btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
+            document.body.removeChild(clone);
             alert('Gagal menyimpan. Coba lagi.');
             console.error(err);
             btn.innerHTML = orig; btn.disabled = false;
         });
-    }, 500);
+    }, 300);
 }
