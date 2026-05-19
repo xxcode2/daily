@@ -190,7 +190,7 @@ function drawPieChart(reguler, project, additional, total) {
     });
 }
 
-// Save report as image 16:9 (1920x1080)
+// Save report as image 16:9 (1920x1080) - responsive to content
 function saveAsImage(format) {
     const reportContainer = document.getElementById('report-container');
     const btn = event.currentTarget;
@@ -202,11 +202,37 @@ function saveAsImage(format) {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        logging: false
+        logging: false,
+        width: reportContainer.scrollWidth,
+        height: reportContainer.scrollHeight,
+        windowWidth: reportContainer.scrollWidth,
+        windowHeight: reportContainer.scrollHeight
     }).then(capturedCanvas => {
-        // Buat canvas 16:9
-        const outputWidth = 1920;
-        const outputHeight = 1080;
+        // Tentukan ukuran output 16:9
+        const ratio = 16 / 9;
+        const srcW = capturedCanvas.width;
+        const srcH = capturedCanvas.height;
+        const srcRatio = srcW / srcH;
+
+        let outputWidth, outputHeight;
+
+        if (srcRatio >= ratio) {
+            // Konten lebih lebar dari 16:9, pakai lebar sebagai basis
+            outputWidth = srcW;
+            outputHeight = Math.round(srcW / ratio);
+        } else {
+            // Konten lebih tinggi dari 16:9, pakai tinggi sebagai basis
+            outputHeight = srcH;
+            outputWidth = Math.round(srcH * ratio);
+        }
+
+        // Minimum 1920x1080
+        if (outputWidth < 1920) {
+            const upscale = 1920 / outputWidth;
+            outputWidth = 1920;
+            outputHeight = Math.round(outputHeight * upscale);
+        }
+
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = outputWidth;
         finalCanvas.height = outputHeight;
@@ -216,9 +242,7 @@ function saveAsImage(format) {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, outputWidth, outputHeight);
 
-        // Scale & center
-        const srcW = capturedCanvas.width;
-        const srcH = capturedCanvas.height;
+        // Scale konten agar muat di canvas 16:9
         const scale = Math.min(outputWidth / srcW, outputHeight / srcH);
         const drawW = srcW * scale;
         const drawH = srcH * scale;

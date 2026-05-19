@@ -185,7 +185,7 @@ body {
 
 .report-container {
     width: 1280px;
-    aspect-ratio: 16 / 9;
+    min-height: 720px;
     background: #fff;
     border-radius: 12px;
     padding: 35px 40px;
@@ -213,12 +213,10 @@ body {
     display: flex;
     gap: 25px;
     flex: 1;
-    overflow: hidden;
 }
 
 .report-left {
     flex: 1;
-    overflow-y: auto;
 }
 
 .report-right {
@@ -353,7 +351,7 @@ body {
 
 /* Responsive */
 @media (max-width: 1300px) {
-    .report-container { width: 100%; aspect-ratio: auto; }
+    .report-container { width: 100%; }
     .report-body { flex-direction: column; }
     .report-right { width: 100%; }
 }
