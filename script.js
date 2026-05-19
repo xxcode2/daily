@@ -420,58 +420,48 @@ function saveCurrentPage(format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    // Save original styles of container and all child elements
+    // Save original styles
     const origStyle = el.style.cssText;
     const allChildren = el.querySelectorAll('*');
     const origChildStyles = [];
     allChildren.forEach(child => origChildStyles.push(child.style.cssText));
 
-    // Force full width, no overflow, no hidden content
-    el.style.width = '1400px';
-    el.style.height = 'auto';
-    el.style.overflow = 'visible';
-    el.style.position = 'relative';
-
-    // Remove overflow hidden/scroll from all children
+    // Force desktop width and remove all overflow constraints
+    el.style.cssText = 'width:1400px;height:auto;overflow:visible;position:relative;padding:35px;';
     allChildren.forEach(child => {
         child.style.overflow = 'visible';
-        child.style.height = 'auto';
         child.style.maxHeight = 'none';
     });
 
     setTimeout(() => {
+        const captureW = el.scrollWidth;
+        const captureH = el.scrollHeight;
+
         html2canvas(el, {
-            scale: 2, useCORS: true, backgroundColor: '#dfe6ed', logging: false,
-            width: el.scrollWidth, height: el.scrollHeight,
-            windowWidth: el.scrollWidth + 100, windowHeight: el.scrollHeight + 100,
-            x: 0, y: 0
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            width: captureW,
+            height: captureH,
+            windowWidth: captureW,
+            windowHeight: captureH
         }).then(captured => {
             // Restore all styles
             el.style.cssText = origStyle;
             allChildren.forEach((child, i) => { child.style.cssText = origChildStyles[i]; });
 
-            const ratio = 16 / 9;
-            const srcW = captured.width, srcH = captured.height;
-            let outW, outH;
-            if (srcW / srcH >= ratio) { outW = srcW; outH = Math.round(srcW / ratio); }
-            else { outH = srcH; outW = Math.round(srcH * ratio); }
-            if (outW < 1920) { const s = 1920 / outW; outW = 1920; outH = Math.round(outH * s); }
-
-            const final = document.createElement('canvas');
-            final.width = outW; final.height = outH;
-            const ctx = final.getContext('2d');
-            ctx.fillStyle = '#dfe6ed';
-            ctx.fillRect(0, 0, outW, outH);
-
-            const scale = Math.min(outW / srcW, outH / srcH);
-            const dW = srcW * scale, dH = srcH * scale;
-            ctx.drawImage(captured, (outW - dW) / 2, (outH - dH) / 2, dW, dH);
-
+            // Download directly - no resizing, no 16:9 forcing
             const link = document.createElement('a');
             const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
             const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
-            if (format === 'png') { link.download = fn + '.png'; link.href = final.toDataURL('image/png'); }
-            else { link.download = fn + '.jpg'; link.href = final.toDataURL('image/jpeg', 0.95); }
+            if (format === 'png') {
+                link.download = fn + '.png';
+                link.href = captured.toDataURL('image/png');
+            } else {
+                link.download = fn + '.jpg';
+                link.href = captured.toDataURL('image/jpeg', 0.95);
+            }
             link.click();
             btn.innerHTML = orig; btn.disabled = false;
         }).catch(err => {
@@ -480,5 +470,5 @@ function saveCurrentPage(format) {
             alert('Gagal menyimpan.'); console.error(err);
             btn.innerHTML = orig; btn.disabled = false;
         });
-    }, 200);
+    }, 300);
 }
