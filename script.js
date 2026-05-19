@@ -190,89 +190,114 @@ function drawPieChart(reguler, project, additional, total) {
     });
 }
 
-// Save report as image 16:9 (1920x1080) - responsive to content
+// Save report as image 16:9 - responsive to content (no clipping)
 function saveAsImage(format) {
     const reportContainer = document.getElementById('report-container');
+    const reportBody = reportContainer.querySelector('.report-body');
+    const reportLeft = reportContainer.querySelector('.report-left');
     const btn = event.currentTarget;
     const originalText = btn.innerHTML;
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    html2canvas(reportContainer, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        width: reportContainer.scrollWidth,
-        height: reportContainer.scrollHeight,
-        windowWidth: reportContainer.scrollWidth,
-        windowHeight: reportContainer.scrollHeight
-    }).then(capturedCanvas => {
-        // Tentukan ukuran output 16:9
-        const ratio = 16 / 9;
-        const srcW = capturedCanvas.width;
-        const srcH = capturedCanvas.height;
-        const srcRatio = srcW / srcH;
+    // Temporarily remove any overflow/height constraints so all content is visible
+    const origContainerStyle = reportContainer.style.cssText;
+    const origBodyStyle = reportBody.style.cssText;
+    const origLeftStyle = reportLeft.style.cssText;
 
-        let outputWidth, outputHeight;
+    reportContainer.style.width = '1280px';
+    reportContainer.style.height = 'auto';
+    reportContainer.style.minHeight = 'auto';
+    reportContainer.style.overflow = 'visible';
+    reportBody.style.overflow = 'visible';
+    reportBody.style.height = 'auto';
+    reportLeft.style.overflow = 'visible';
+    reportLeft.style.height = 'auto';
 
-        if (srcRatio >= ratio) {
-            // Konten lebih lebar dari 16:9, pakai lebar sebagai basis
-            outputWidth = srcW;
-            outputHeight = Math.round(srcW / ratio);
-        } else {
-            // Konten lebih tinggi dari 16:9, pakai tinggi sebagai basis
-            outputHeight = srcH;
-            outputWidth = Math.round(srcH * ratio);
-        }
+    // Wait for reflow
+    setTimeout(() => {
+        html2canvas(reportContainer, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            width: reportContainer.scrollWidth,
+            height: reportContainer.scrollHeight,
+            windowWidth: reportContainer.scrollWidth + 100,
+            windowHeight: reportContainer.scrollHeight + 100
+        }).then(capturedCanvas => {
+            // Restore original styles
+            reportContainer.style.cssText = origContainerStyle;
+            reportBody.style.cssText = origBodyStyle;
+            reportLeft.style.cssText = origLeftStyle;
+            // Tentukan ukuran output 16:9
+            const ratio = 16 / 9;
+            const srcW = capturedCanvas.width;
+            const srcH = capturedCanvas.height;
+            const srcRatio = srcW / srcH;
 
-        // Minimum 1920x1080
-        if (outputWidth < 1920) {
-            const upscale = 1920 / outputWidth;
-            outputWidth = 1920;
-            outputHeight = Math.round(outputHeight * upscale);
-        }
+            let outputWidth, outputHeight;
 
-        const finalCanvas = document.createElement('canvas');
-        finalCanvas.width = outputWidth;
-        finalCanvas.height = outputHeight;
-        const ctx = finalCanvas.getContext('2d');
+            if (srcRatio >= ratio) {
+                outputWidth = srcW;
+                outputHeight = Math.round(srcW / ratio);
+            } else {
+                outputHeight = srcH;
+                outputWidth = Math.round(srcH * ratio);
+            }
 
-        // Background putih
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, outputWidth, outputHeight);
+            // Minimum 1920x1080
+            if (outputWidth < 1920) {
+                const upscale = 1920 / outputWidth;
+                outputWidth = 1920;
+                outputHeight = Math.round(outputHeight * upscale);
+            }
 
-        // Scale konten agar muat di canvas 16:9
-        const scale = Math.min(outputWidth / srcW, outputHeight / srcH);
-        const drawW = srcW * scale;
-        const drawH = srcH * scale;
-        const offsetX = (outputWidth - drawW) / 2;
-        const offsetY = (outputHeight - drawH) / 2;
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = outputWidth;
+            finalCanvas.height = outputHeight;
+            const ctx = finalCanvas.getContext('2d');
 
-        ctx.drawImage(capturedCanvas, offsetX, offsetY, drawW, drawH);
+            // Background putih
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, outputWidth, outputHeight);
 
-        // Download
-        const link = document.createElement('a');
-        const dateVal = document.getElementById('activity-date').value;
-        const fileName = `Daily_Activity_GA_${dateVal}`;
+            // Scale konten agar muat di canvas 16:9
+            const scale = Math.min(outputWidth / srcW, outputHeight / srcH);
+            const drawW = srcW * scale;
+            const drawH = srcH * scale;
+            const offsetX = (outputWidth - drawW) / 2;
+            const offsetY = (outputHeight - drawH) / 2;
 
-        if (format === 'png') {
-            link.download = `${fileName}.png`;
-            link.href = finalCanvas.toDataURL('image/png');
-        } else {
-            link.download = `${fileName}.jpg`;
-            link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
-        }
+            ctx.drawImage(capturedCanvas, offsetX, offsetY, drawW, drawH);
 
-        link.click();
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }).catch(err => {
-        alert('Gagal menyimpan gambar. Coba lagi.');
-        console.error(err);
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    });
+            // Download
+            const link = document.createElement('a');
+            const dateVal = document.getElementById('activity-date').value;
+            const fileName = `Daily_Activity_GA_${dateVal}`;
+
+            if (format === 'png') {
+                link.download = `${fileName}.png`;
+                link.href = finalCanvas.toDataURL('image/png');
+            } else {
+                link.download = `${fileName}.jpg`;
+                link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
+            }
+
+            link.click();
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }).catch(err => {
+            // Restore original styles on error too
+            reportContainer.style.cssText = origContainerStyle;
+            reportBody.style.cssText = origBodyStyle;
+            reportLeft.style.cssText = origLeftStyle;
+            alert('Gagal menyimpan gambar. Coba lagi.');
+            console.error(err);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }, 100);
 }
 
 // Go back to form
