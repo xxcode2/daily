@@ -123,14 +123,6 @@
 
     <!-- OUTPUT REPORT -->
     <div id="report-section" style="display:none;">
-        <!-- TOOLBAR SAVE - SELALU TERLIHAT DI ATAS -->
-        <div class="save-toolbar" id="save-toolbar">
-            <button class="toolbar-btn btn-back" onclick="goBack()">&#8592; Kembali</button>
-            <button class="toolbar-btn btn-save-png" onclick="saveAsImage('png')">&#128247; SAVE PNG</button>
-            <button class="toolbar-btn btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; SAVE JPG</button>
-            <button class="toolbar-btn btn-print" onclick="window.print()">&#128424; Print PDF</button>
-        </div>
-
         <!-- REPORT CONTAINER -->
         <div class="report-wrapper">
             <div class="report-container" id="report-container">
@@ -185,6 +177,14 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- TOMBOL AKSI DI BAWAH REPORT -->
+        <div class="report-actions">
+            <button class="action-btn btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
+            <button class="action-btn btn-save-png" onclick="saveAsImage('png')">&#128247; Save PNG</button>
+            <button class="action-btn btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; Save JPG</button>
+            <button class="action-btn btn-print" onclick="window.print()">&#128424; Print / Save PDF</button>
         </div>
     </div>
 

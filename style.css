@@ -141,39 +141,37 @@ body {
     margin-top: 20px;
 }
 
-/* ===== SAVE TOOLBAR ===== */
-.save-toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 9999;
-    background: #1a1a2e;
-    padding: 14px 20px;
+/* ===== REPORT ACTIONS (di bawah report, samping Print) ===== */
+.report-actions {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 12px;
+    padding: 20px;
     flex-wrap: wrap;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
-.toolbar-btn {
-    padding: 12px 24px;
+.action-btn {
+    padding: 14px 28px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: 700;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
     color: #fff;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.toolbar-btn:hover { transform: scale(1.05); }
+.action-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
 
-.btn-back { background: #636e72; }
-.btn-save-png { background: #2980b9; }
-.btn-save-jpg { background: #8e44ad; }
-.btn-print { background: #27ae60; }
+.action-btn.btn-back { background: #636e72; }
+.action-btn.btn-save-png { background: #2980b9; }
+.action-btn.btn-save-jpg { background: #8e44ad; }
+.action-btn.btn-print { background: #27ae60; }
 
 
 /* ===== REPORT ===== */
@@ -347,7 +345,7 @@ body {
 
 /* Print */
 @media print {
-    .save-toolbar { display: none !important; }
+    .report-actions { display: none !important; }
     #form-section { display: none !important; }
     .report-wrapper { padding: 0; }
     .report-container { box-shadow: none; border-radius: 0; width: 100%; }
