@@ -385,7 +385,27 @@ body {
     color: #fff;
 }
 
-.btn-back:hover, .btn-print:hover {
+.btn-save-png, .btn-save-jpg {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: #fff;
+}
+
+.btn-save-png {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+}
+
+.btn-save-jpg {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+}
+
+.btn-back:hover, .btn-print:hover, .btn-save-png:hover, .btn-save-jpg:hover {
     transform: scale(1.05);
 }
 

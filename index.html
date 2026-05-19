@@ -180,10 +180,13 @@
         </div>
         <div class="report-actions">
             <button class="btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
+            <button class="btn-save-png" onclick="saveAsImage('png')">&#128247; Save PNG</button>
+            <button class="btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; Save JPG</button>
             <button class="btn-print" onclick="window.print()">&#128424; Print / Save PDF</button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

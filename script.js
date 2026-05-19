@@ -211,6 +211,47 @@ function drawPieChart(reguler, project, additional, total) {
     ctx.stroke();
 }
 
+// Save report as PNG or JPG
+function saveAsImage(format) {
+    const reportContainer = document.getElementById('report-container');
+    
+    // Show loading indicator
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Processing...';
+    btn.disabled = true;
+
+    html2canvas(reportContainer, {
+        scale: 2, // High resolution
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false
+    }).then(canvas => {
+        const link = document.createElement('a');
+        const dateVal = document.getElementById('activity-date').value;
+        const fileName = `Daily_Activity_GA_${dateVal}`;
+
+        if (format === 'png') {
+            link.download = `${fileName}.png`;
+            link.href = canvas.toDataURL('image/png');
+        } else {
+            link.download = `${fileName}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+        }
+
+        link.click();
+
+        // Reset button
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }).catch(err => {
+        alert('Gagal menyimpan gambar. Coba lagi.');
+        console.error(err);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
 // Go back to form
 function goBack() {
     document.getElementById('form-section').style.display = 'block';
