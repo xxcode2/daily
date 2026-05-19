@@ -120,57 +120,98 @@
 
     <!-- OUTPUT REPORT -->
     <div id="report-section" style="display:none;">
-        <div class="report-wrapper">
-            <div class="report-container" id="report-container">
-                <div class="report-header">
-                    <h1 id="report-title">GA DAILY ACTIVITY ANALYSIS - Monday, May 19, 2026</h1>
-                </div>
+        <!-- PAGE TABS -->
+        <div class="page-tabs">
+            <button class="tab-btn active" onclick="switchPage('page1')">&#128202; Infographic Analysis</button>
+            <button class="tab-btn" onclick="switchPage('page2')">&#128203; Daily Activity List</button>
+        </div>
 
-                <div class="report-panels">
-                    <div class="panel panel-left">
-                        <h3 class="panel-title">TOTAL ACTIVITY DISTRIBUTION</h3>
-                        <div class="donut-section">
-                            <canvas id="donutChart" width="280" height="280"></canvas>
-                            <div class="donut-legend">
-                                <div class="legend-row"><span class="dot dot-red"></span><strong>REGULAR:</strong> <span id="legend-reguler">0</span></div>
-                                <div class="legend-row"><span class="dot dot-green"></span><strong>PROJECT:</strong> <span id="legend-project">0</span></div>
-                                <div class="legend-row"><span class="dot dot-yellow"></span><strong>ADDITIONAL:</strong> <span id="legend-additional">0</span></div>
+        <!-- PAGE 1: INFOGRAPHIC ANALYSIS -->
+        <div id="page1" class="report-page">
+            <div class="report-wrapper">
+                <div class="report-container" id="report-container-page1">
+                    <div class="report-header">
+                        <h1 id="report-title">GA DAILY ACTIVITY ANALYSIS - Monday, May 19, 2026</h1>
+                    </div>
+
+                    <div class="report-panels">
+                        <div class="panel panel-left">
+                            <h3 class="panel-title">TOTAL ACTIVITY DISTRIBUTION</h3>
+                            <div class="donut-section">
+                                <canvas id="donutChart" width="280" height="280"></canvas>
+                                <div class="donut-legend">
+                                    <div class="legend-row"><span class="dot dot-red"></span><strong>REGULAR:</strong> <span id="legend-reguler">0</span></div>
+                                    <div class="legend-row"><span class="dot dot-green"></span><strong>PROJECT:</strong> <span id="legend-project">0</span></div>
+                                    <div class="legend-row"><span class="dot dot-yellow"></span><strong>ADDITIONAL:</strong> <span id="legend-additional">0</span></div>
+                                </div>
+                            </div>
+                            <div class="quantitative-summary">
+                                <h4>QUANTITATIVE SUMMARY</h4>
+                                <p>TOTAL ACTIVITIES: <strong id="summary-total">0</strong></p>
+                                <div class="summary-legend">
+                                    <span class="dot dot-red"></span> REGULER
+                                    <span class="dot dot-green"></span> PROJECT
+                                    <span class="dot dot-yellow"></span> ADDITIONAL
+                                </div>
                             </div>
                         </div>
-                        <div class="quantitative-summary">
-                            <h4>QUANTITATIVE SUMMARY</h4>
-                            <p>TOTAL ACTIVITIES: <strong id="summary-total">0</strong></p>
-                            <div class="summary-legend">
-                                <span class="dot dot-red"></span> REGULER
-                                <span class="dot dot-green"></span> PROJECT
-                                <span class="dot dot-yellow"></span> ADDITIONAL
+
+                        <div class="panel panel-right">
+                            <h3 class="panel-title">OPERATIONAL BREAKDOWN BY DEPARTMENT</h3>
+                            <div class="bar-legend">
+                                <span><span class="sq sq-red"></span> Reguler</span>
+                                <span><span class="sq sq-green"></span> Project</span>
+                                <span><span class="sq sq-yellow"></span> Additional</span>
+                            </div>
+                            <canvas id="barChart" width="500" height="220"></canvas>
+                            <div class="key-notes">
+                                <h4>KEY ANALYSIS NOTES:</h4>
+                                <ul id="key-notes-list"></ul>
                             </div>
                         </div>
                     </div>
 
-                    <div class="panel panel-right">
-                        <h3 class="panel-title">OPERATIONAL BREAKDOWN BY DEPARTMENT</h3>
-                        <div class="bar-legend">
-                            <span><span class="sq sq-red"></span> Reguler</span>
-                            <span><span class="sq sq-green"></span> Project</span>
-                            <span><span class="sq sq-yellow"></span> Additional</span>
-                        </div>
-                        <canvas id="barChart" width="500" height="220"></canvas>
-                        <div class="key-notes">
-                            <h4>KEY ANALYSIS NOTES:</h4>
-                            <ul id="key-notes-list"></ul>
-                        </div>
-                    </div>
+                    <div class="dept-cards" id="dept-cards"></div>
                 </div>
-
-                <div class="dept-cards" id="dept-cards"></div>
             </div>
         </div>
 
+        <!-- PAGE 2: DAILY ACTIVITY LIST -->
+        <div id="page2" class="report-page" style="display:none;">
+            <div class="report-wrapper">
+                <div class="report-container" id="report-container-page2">
+                    <div class="report-header">
+                        <h1 id="report-title-p2">DAILY ACTIVITY GA - Monday, May 19, 2026</h1>
+                    </div>
+                    <div class="report-body-p2">
+                        <div class="activity-list-output" id="activity-list-output"></div>
+                        <div class="activity-stats-output">
+                            <canvas id="pieChartP2" width="280" height="280"></canvas>
+                            <div class="stats-box-p2">
+                                <h3>STATISTIK AKTIVITAS</h3>
+                                <div class="stats-grid-p2">
+                                    <div class="stat-item-p2"><span class="stat-label-p2">TOTAL</span><span class="stat-val-p2" id="p2-total">0</span></div>
+                                    <div class="stat-item-p2"><span class="stat-label-p2">REGULER</span><span class="stat-val-p2 stat-red" id="p2-reguler">0</span><span class="stat-pct-p2" id="p2-reguler-pct">0%</span></div>
+                                    <div class="stat-item-p2"><span class="stat-label-p2">PROJECT</span><span class="stat-val-p2 stat-green" id="p2-project">0</span><span class="stat-pct-p2" id="p2-project-pct">0%</span></div>
+                                    <div class="stat-item-p2"><span class="stat-label-p2">ADDITIONAL</span><span class="stat-val-p2 stat-yellow" id="p2-additional">0</span><span class="stat-pct-p2" id="p2-additional-pct">0%</span></div>
+                                </div>
+                            </div>
+                            <div class="legend-box-p2">
+                                <span class="leg-item leg-r">&#128203; REGULER</span>
+                                <span class="leg-item leg-p">&#128196; PROJECT</span>
+                                <span class="leg-item leg-a">&#10133; ADDITIONAL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
         <div class="report-actions">
             <button class="action-btn btn-back" onclick="goBack()">&#8592; Kembali ke Form</button>
-            <button class="action-btn btn-save-png" onclick="saveAsImage('png')">&#128247; Save PNG</button>
-            <button class="action-btn btn-save-jpg" onclick="saveAsImage('jpg')">&#128247; Save JPG</button>
+            <button class="action-btn btn-save-png" onclick="saveCurrentPage('png')">&#128247; Save PNG</button>
+            <button class="action-btn btn-save-jpg" onclick="saveCurrentPage('jpg')">&#128247; Save JPG</button>
             <button class="action-btn btn-print" onclick="window.print()">&#128424; Print / Save PDF</button>
         </div>
     </div>

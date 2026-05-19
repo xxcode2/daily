@@ -104,3 +104,48 @@ body { font-family: 'Poppins', sans-serif; background: #e8ecf0; color: #333; min
 
 @media print { .report-actions, #form-section { display: none !important; } .report-wrapper { padding: 0; } .report-container { box-shadow: none; } }
 @media (max-width: 1300px) { .report-container { width: 100%; } .report-panels { flex-direction: column; } .dept-cards { flex-direction: column; } }
+
+
+/* PAGE TABS */
+.page-tabs { display: flex; justify-content: center; gap: 0; padding: 15px 20px 0; }
+.tab-btn { padding: 14px 35px; border: none; font-size: 1rem; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; border-radius: 12px 12px 0 0; transition: all 0.2s; color: #7f8c8d; background: #e0e5ea; }
+.tab-btn.active { background: #dfe6ed; color: #1a1a2e; box-shadow: 0 -3px 10px rgba(0,0,0,0.08); }
+.tab-btn:hover:not(.active) { background: #d0d6dc; }
+
+/* PAGE 2: ACTIVITY LIST */
+.report-body-p2 { display: flex; gap: 25px; }
+.activity-list-output { flex: 1; }
+.activity-stats-output { width: 340px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+
+/* Division Activity Cards (Page 2) */
+.div-activity-card { display: flex; margin-bottom: 14px; border-radius: 10px; overflow: hidden; border: 1px solid #e0e0e0; background: #fff; }
+.div-activity-label { width: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 10px; color: #fff; font-weight: 700; font-size: 0.78rem; text-align: center; }
+.div-activity-label .dv-icon { font-size: 2rem; margin-bottom: 5px; }
+.div-activity-content { flex: 1; padding: 10px 15px; }
+.div-activity-content ul { list-style: none; }
+.div-activity-content li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 0.82rem; border-bottom: 1px solid #f5f5f5; }
+.div-activity-content li:last-child { border-bottom: none; }
+.badge-p2 { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.68rem; font-weight: 700; color: #fff; min-width: 80px; text-align: center; }
+.badge-p2.b-reguler { background: #c0392b; }
+.badge-p2.b-project { background: #27ae60; }
+.badge-p2.b-additional { background: #f39c12; }
+
+/* Stats Page 2 */
+.stats-box-p2 { width: 100%; border: 2px solid #ddd; border-radius: 12px; padding: 14px; text-align: center; background: #fff; }
+.stats-box-p2 h3 { font-size: 0.88rem; margin-bottom: 12px; color: #2c3e50; font-weight: 800; }
+.stats-grid-p2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.stat-item-p2 { display: flex; flex-direction: column; align-items: center; }
+.stat-label-p2 { font-size: 0.6rem; font-weight: 600; color: #7f8c8d; }
+.stat-val-p2 { font-size: 1.6rem; font-weight: 800; color: #2c3e50; }
+.stat-pct-p2 { font-size: 0.7rem; font-weight: 600; color: #7f8c8d; }
+.stat-red { color: #c0392b; }
+.stat-green { color: #27ae60; }
+.stat-yellow { color: #f39c12; }
+
+.legend-box-p2 { display: flex; gap: 12px; flex-wrap: wrap; }
+.leg-item { padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; }
+.leg-r { background: #fdecea; color: #c0392b; }
+.leg-p { background: #e8f8f0; color: #27ae60; }
+.leg-a { background: #fef9e7; color: #f39c12; }
+
+@media (max-width: 1300px) { .report-body-p2 { flex-direction: column; } .activity-stats-output { width: 100%; } }

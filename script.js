@@ -81,8 +81,12 @@ function generateReport() {
     renderKeyNotes();
     generateDeptCards(divData);
 
+    // Generate Page 2
+    generatePage2(divData, total, reguler, project, additional, regulerPct, projectPct, additionalPct, dateVal);
+
     document.getElementById('form-section').style.display = 'none';
     document.getElementById('report-section').style.display = 'block';
+    switchPage('page1');
 }
 
 function drawDonut(reguler, project, additional, total, rPct, pPct, aPct) {
@@ -272,4 +276,154 @@ function saveAsImage(format) {
 function goBack() {
     document.getElementById('form-section').style.display = 'block';
     document.getElementById('report-section').style.display = 'none';
+}
+
+
+// ===== PAGE 2: ACTIVITY LIST =====
+let cachedDivData = [];
+
+function generatePage2(divData, total, reguler, project, additional, regulerPct, projectPct, additionalPct, dateVal) {
+    cachedDivData = divData;
+
+    // Title
+    document.getElementById('report-title-p2').textContent = `DAILY ACTIVITY GA \u2013 ${formatDate(dateVal)}`;
+
+    // Activity Cards
+    const output = document.getElementById('activity-list-output');
+    output.innerHTML = '';
+
+    divData.forEach(d => {
+        if (d.activities.length === 0) return;
+        const card = document.createElement('div');
+        card.className = 'div-activity-card';
+
+        let listHtml = d.activities.map(a => {
+            const cls = a.category === 'REGULER' ? 'b-reguler' : a.category === 'PROJECT' ? 'b-project' : 'b-additional';
+            return `<li><span>\u2022 ${a.name}</span><span class="badge-p2 ${cls}">${a.category}</span></li>`;
+        }).join('');
+
+        card.innerHTML = `
+            <div class="div-activity-label" style="background:${d.bg}">
+                <span class="dv-icon">${d.icon}</span>
+                <span>${d.name}</span>
+            </div>
+            <div class="div-activity-content"><ul>${listHtml}</ul></div>
+        `;
+        output.appendChild(card);
+    });
+
+    // Stats
+    document.getElementById('p2-total').textContent = total;
+    document.getElementById('p2-reguler').textContent = reguler;
+    document.getElementById('p2-project').textContent = project;
+    document.getElementById('p2-additional').textContent = additional;
+    document.getElementById('p2-reguler-pct').textContent = `\u25CF ${regulerPct}%`;
+    document.getElementById('p2-project-pct').textContent = `\u25CF ${projectPct}%`;
+    document.getElementById('p2-additional-pct').textContent = `\u25CF ${additionalPct}%`;
+
+    // Pie Chart
+    drawPieP2(reguler, project, additional, total);
+}
+
+function drawPieP2(reguler, project, additional, total) {
+    const canvas = document.getElementById('pieChartP2');
+    const ctx = canvas.getContext('2d');
+    const cx = canvas.width / 2, cy = canvas.height / 2, r = 110;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const segs = [
+        { value: reguler, color: '#c0392b' },
+        { value: project, color: '#27ae60' },
+        { value: additional, color: '#f39c12' }
+    ].filter(s => s.value > 0);
+
+    let start = -Math.PI / 2;
+    segs.forEach(seg => {
+        const slice = (seg.value / total) * 2 * Math.PI;
+        const end = start + slice;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, start, end);
+        ctx.closePath();
+        ctx.fillStyle = seg.color;
+        ctx.fill();
+
+        const mid = start + slice / 2;
+        const pct = Math.round((seg.value / total) * 100);
+        if (pct > 0) {
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 15px Poppins';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(pct + '%', cx + Math.cos(mid) * r * 0.6, cy + Math.sin(mid) * r * 0.6);
+        }
+        start = end;
+    });
+}
+
+// ===== PAGE SWITCHING =====
+let currentPage = 'page1';
+
+function switchPage(pageId) {
+    document.getElementById('page1').style.display = pageId === 'page1' ? 'block' : 'none';
+    document.getElementById('page2').style.display = pageId === 'page2' ? 'block' : 'none';
+    currentPage = pageId;
+
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && pageId === 'page1') || (i === 1 && pageId === 'page2'));
+    });
+}
+
+// ===== SAVE CURRENT PAGE =====
+function saveCurrentPage(format) {
+    const containerId = currentPage === 'page1' ? 'report-container-page1' : 'report-container-page2';
+    const el = document.getElementById(containerId);
+    const btn = event.currentTarget;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '\u23F3 Menyimpan...';
+    btn.disabled = true;
+
+    const origStyle = el.style.cssText;
+    el.style.width = '1400px';
+    el.style.height = 'auto';
+    el.style.overflow = 'visible';
+
+    setTimeout(() => {
+        html2canvas(el, {
+            scale: 2, useCORS: true, backgroundColor: '#dfe6ed', logging: false,
+            width: el.scrollWidth, height: el.scrollHeight,
+            windowWidth: el.scrollWidth + 50, windowHeight: el.scrollHeight + 50
+        }).then(captured => {
+            el.style.cssText = origStyle;
+
+            const ratio = 16 / 9;
+            const srcW = captured.width, srcH = captured.height;
+            let outW, outH;
+            if (srcW / srcH >= ratio) { outW = srcW; outH = Math.round(srcW / ratio); }
+            else { outH = srcH; outW = Math.round(srcH * ratio); }
+            if (outW < 1920) { const s = 1920 / outW; outW = 1920; outH = Math.round(outH * s); }
+
+            const final = document.createElement('canvas');
+            final.width = outW; final.height = outH;
+            const ctx = final.getContext('2d');
+            ctx.fillStyle = '#dfe6ed';
+            ctx.fillRect(0, 0, outW, outH);
+
+            const scale = Math.min(outW / srcW, outH / srcH);
+            const dW = srcW * scale, dH = srcH * scale;
+            ctx.drawImage(captured, (outW - dW) / 2, (outH - dH) / 2, dW, dH);
+
+            const link = document.createElement('a');
+            const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
+            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
+            if (format === 'png') { link.download = fn + '.png'; link.href = final.toDataURL('image/png'); }
+            else { link.download = fn + '.jpg'; link.href = final.toDataURL('image/jpeg', 0.95); }
+            link.click();
+            btn.innerHTML = orig; btn.disabled = false;
+        }).catch(err => {
+            el.style.cssText = origStyle;
+            alert('Gagal menyimpan.'); console.error(err);
+            btn.innerHTML = orig; btn.disabled = false;
+        });
+    }, 100);
 }
