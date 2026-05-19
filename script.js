@@ -367,38 +367,64 @@ function saveCurrentPage(btn, format) {
     btn.innerHTML = '\u23F3 Menyimpan...';
     btn.disabled = true;
 
-    const width = el.scrollWidth;
-    const height = el.scrollHeight;
+    const clone = el.cloneNode(true);
+    clone.style.position = 'fixed';
+    clone.style.top = '0';
+    clone.style.left = '0';
+    clone.style.width = '1400px';
+    clone.style.height = 'auto';
+    clone.style.overflow = 'visible';
+    clone.style.zIndex = '9999';
+    clone.style.opacity = '0';
+    clone.style.pointerEvents = 'none';
+    document.body.appendChild(clone);
 
-    html2canvas(el, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        width: width,
-        height: height,
-        windowWidth: width,
-        windowHeight: height,
-        scrollX: 0,
-        scrollY: 0
-    }).then(captured => {
-        const link = document.createElement('a');
-        const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
-        const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
-        if (format === 'png') {
-            link.download = fn + '.png';
-            link.href = captured.toDataURL('image/png');
-        } else {
-            link.download = fn + '.jpg';
-            link.href = captured.toDataURL('image/jpeg', 0.95);
+    const origCanvases = el.querySelectorAll('canvas');
+    const cloneCanvases = clone.querySelectorAll('canvas');
+    origCanvases.forEach((origCanvas, i) => {
+        if (cloneCanvases[i] && origCanvas.width > 0 && origCanvas.height > 0) {
+            cloneCanvases[i].width = origCanvas.width;
+            cloneCanvases[i].height = origCanvas.height;
+            const ctx = cloneCanvases[i].getContext('2d');
+            ctx.drawImage(origCanvas, 0, 0);
         }
-        link.click();
-        btn.innerHTML = orig;
-        btn.disabled = false;
-    }).catch(err => {
-        alert('Gagal menyimpan. Coba lagi.');
-        console.error(err);
-        btn.innerHTML = orig;
-        btn.disabled = false;
     });
+
+    setTimeout(() => {
+        html2canvas(clone, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#dfe6ed',
+            logging: false,
+            width: clone.scrollWidth,
+            height: clone.scrollHeight,
+            windowWidth: clone.scrollWidth,
+            windowHeight: clone.scrollHeight,
+            scrollX: 0,
+            scrollY: 0
+        }).then(captured => {
+            if (clone.parentNode) document.body.removeChild(clone);
+
+            const link = document.createElement('a');
+            const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
+            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
+            if (format === 'png') {
+                link.download = fn + '.png';
+                link.href = captured.toDataURL('image/png');
+            } else {
+                link.download = fn + '.jpg';
+                link.href = captured.toDataURL('image/jpeg', 0.95);
+            }
+            link.click();
+            btn.innerHTML = orig;
+            btn.disabled = false;
+        }).catch(err => {
+            if (clone.parentNode) document.body.removeChild(clone);
+            alert('Gagal menyimpan. Coba lagi.');
+            console.error(err);
+            btn.innerHTML = orig;
+            btn.disabled = false;
+        });
+    }, 50);
 }
