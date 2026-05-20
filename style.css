@@ -82,7 +82,7 @@ body { font-family: 'Poppins', sans-serif; background: #e8ecf0; color: #333; min
 .banner-content { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
 .banner-left h1 { font-size: 2.2rem; font-weight: 900; color: #fff; letter-spacing: -0.3px; line-height: 1.1; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
 .banner-logo-row { display: flex; align-items: center; gap: 16px; }
-.banner-logo { height: 52px; width: auto; object-fit: contain; border-radius: 8px; padding: 5px; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); }
+.banner-logo { height: 65px; width: auto; object-fit: contain; border-radius: 8px; padding: 5px; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); }
 .banner-meta { display: flex; gap: 35px; margin-top: 12px; }
 .banner-meta .meta-item { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.9); font-size: 0.92rem; }
 .banner-meta .meta-item strong { color: #fff; }
