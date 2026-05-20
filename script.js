@@ -6,7 +6,7 @@ function addRow(containerId) {
     const container = document.getElementById(containerId);
     const row = document.createElement('div');
     row.className = 'activity-row';
-    row.innerHTML = `<input type="text" placeholder="Nama aktivitas..." class="activity-input"><select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select><button class="btn-remove" onclick="removeRow(this)">&#10005;</button>`;
+    row.innerHTML = `<input type="text" class="activity-input" placeholder="Aktivitas..."><select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select><button class="btn-remove" onclick="removeRow(this)">✕</button>`;
     container.appendChild(row);
 }
 
@@ -16,22 +16,23 @@ function removeRow(btn) {
 }
 
 const divisions = [
-    { id: 'nrm-activities', name: 'NRM', prefix: 'nrm', icon: '&#127793;', bg: '#1a5c2e' },
-    { id: 'cs-activities', name: 'CS', prefix: 'cs', icon: '&#128172;', bg: '#1a3a6b' },
-    { id: 'utility-activities', name: 'UTILITY', prefix: 'utility', icon: '&#128295;', bg: '#b8860b' },
-    { id: 'ts-activities', name: 'TS', prefix: 'ts', icon: '&#128225;', bg: '#4a0e8f' },
-    { id: 'ga-activities', name: 'GA Internal', prefix: 'ga', icon: '&#9881;', bg: '#8b0000' }
+    { id: 'nrm-activities', name: 'NRM', icon: '🪣' },
+    { id: 'cs-activities', name: 'CLEANING SERVICE', icon: '🪣' },
+    { id: 'ts-activities', name: 'TECHNICAL SUPPORT / WORKSHOP', icon: '🔧' },
+    { id: 'utility-activities', name: 'UTILITY', icon: '🏗️' },
+    { id: 'ga-activities', name: 'GA Internal', icon: '📋' }
 ];
 
-function formatDate(dateStr) {
-    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function formatDateID(dateStr) {
+    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
     const d = new Date(dateStr);
-    return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    return { full: `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`, day: days[d.getDay()] };
 }
 
 function generateReport() {
     const dateVal = document.getElementById('activity-date').value;
+    const picName = document.getElementById('pic-name').value.trim() || 'GA Team';
     if (!dateVal) { alert('Pilih tanggal!'); return; }
 
     let allActivities = [];
@@ -43,21 +44,10 @@ function generateReport() {
         rows.forEach(row => {
             const name = row.querySelector('.activity-input').value.trim();
             const cat = row.querySelector('.category-select').value;
-            if (name) { acts.push({ name, category: cat }); allActivities.push({ name, category: cat, dept: div.name }); }
+            if (name) acts.push({ name, category: cat });
         });
-
-        // Get manual card inputs
-        const label = document.getElementById(div.prefix + '-label').value.trim();
-        const desc = document.getElementById(div.prefix + '-desc').value.trim();
-        const tag = document.getElementById(div.prefix + '-tag').value.trim();
-
-        divData.push({
-            ...div, activities: acts,
-            reguler: acts.filter(a => a.category === 'REGULER').length,
-            project: acts.filter(a => a.category === 'PROJECT').length,
-            additional: acts.filter(a => a.category === 'ADDITIONAL').length,
-            cardLabel: label, cardDesc: desc, cardTag: tag
-        });
+        allActivities.push(...acts.map(a => ({ ...a, dept: div.name })));
+        divData.push({ ...div, activities: acts });
     });
 
     if (allActivities.length === 0) { alert('Isi minimal 1 aktivitas!'); return; }
@@ -66,196 +56,115 @@ function generateReport() {
     const reguler = allActivities.filter(a => a.category === 'REGULER').length;
     const project = allActivities.filter(a => a.category === 'PROJECT').length;
     const additional = allActivities.filter(a => a.category === 'ADDITIONAL').length;
-    const regulerPct = Math.round((reguler / total) * 100);
-    const projectPct = Math.round((project / total) * 100);
-    const additionalPct = 100 - regulerPct - projectPct;
 
-    document.getElementById('report-title').textContent = `GA DAILY ACTIVITY ANALYSIS \u2013 ${formatDate(dateVal)}`;
-    document.getElementById('legend-reguler').textContent = reguler;
-    document.getElementById('legend-project').textContent = project;
-    document.getElementById('legend-additional').textContent = additional;
-    document.getElementById('summary-total').textContent = total;
+    const dateInfo = formatDateID(dateVal);
 
-    drawDonut(reguler, project, additional, total, regulerPct, projectPct, additionalPct);
-    drawBarChart(divData);
-    renderKeyNotes();
-    generateDeptCards(divData);
+    // Header
+    document.getElementById('report-date').textContent = dateInfo.full;
+    document.getElementById('report-pic').textContent = picName;
 
-    // Generate Page 2
-    generatePage2(divData, total, reguler, project, additional, regulerPct, projectPct, additionalPct, dateVal);
+    // Left Column: Division Activities
+    const output = document.getElementById('division-activities-output');
+    output.innerHTML = '';
+    divData.forEach(d => {
+        if (d.activities.length === 0) return;
+        const card = document.createElement('div');
+        card.className = 'div-activity-card';
+        const listHtml = d.activities.map(a => {
+            const cls = a.category === 'REGULER' ? 'badge-reguler' : a.category === 'PROJECT' ? 'badge-project' : 'badge-additional';
+            return `<li><span>• ${a.name}</span><span class="badge ${cls}">${a.category}</span></li>`;
+        }).join('');
+        card.innerHTML = `<div class="div-label"><span class="div-icon">${d.icon}</span><span class="div-name">${d.name}</span></div><div class="div-content"><ul>${listHtml}</ul></div>`;
+        output.appendChild(card);
+    });
 
+    // Right Column: Key Achievement
+    const achInput = document.getElementById('key-achievement-input').value.trim();
+    const achGrid = document.getElementById('achievement-grid');
+    const achIcons = ['📋', '✅', '📈'];
+    const defaultAch = ['Seluruh kegiatan berjalan sesuai rencana dengan fokus pada kebersihan, perawatan, dan administrasi.', 'Dukungan antar tim optimal dalam menjaga operasional plant tetap lancar dan terkendali.', 'Progres project berjalan sesuai target, dengan beberapa tambahan aktivitas pendukung.'];
+    const achLines = achInput ? achInput.split('\n').filter(l => l.trim()) : defaultAch;
+    achGrid.innerHTML = achLines.slice(0, 3).map((line, i) => `<div class="achievement-item"><span class="ach-icon">${achIcons[i] || '✅'}</span><p>${line.trim()}</p></div>`).join('');
+
+    // Donut Chart
+    drawDonut(reguler, project, additional, total);
+
+    // Donut Legend
+    const legend = document.getElementById('donut-legend');
+    const rPct = Math.round((reguler / total) * 100);
+    const pPct = Math.round((project / total) * 100);
+    const aPct = 100 - rPct - pPct;
+    legend.innerHTML = `
+        <div class="legend-row"><span class="dot dot-blue"></span> Regular (${reguler}) &nbsp; ${rPct}%</div>
+        <div class="legend-row"><span class="dot dot-gold"></span> Project (${project}) &nbsp; ${pPct}%</div>
+        <div class="legend-row"><span class="dot dot-teal"></span> Additional (${additional}) &nbsp; ${aPct}%</div>
+        <div class="legend-total">TOTAL &nbsp;&nbsp;&nbsp; 100%</div>
+    `;
+
+    // Additional Highlight Badge
+    document.getElementById('highlight-badge').textContent = `${additional} AKTIVITAS ✓`;
+
+    // Next Action
+    const nextInput = document.getElementById('next-action-input').value.trim();
+    const nextList = document.getElementById('next-action-list');
+    const defaultNext = ['Melanjutkan penyelesaian task reguler & project sesuai timeline.', 'Monitoring progres dan pelaporan hasil kegiatan harian.'];
+    const nextLines = nextInput ? nextInput.split('\n').filter(l => l.trim()) : defaultNext;
+    nextList.innerHTML = nextLines.map(l => `<li>${l.trim()}</li>`).join('');
+
+    // Next Action Meta
+    document.getElementById('meta-report-day').textContent = `${dateInfo.day},`;
+    document.getElementById('meta-report-date').textContent = dateInfo.full;
+
+    // Show report
     document.getElementById('form-section').style.display = 'none';
     document.getElementById('report-section').style.display = 'block';
-    switchPage('page1');
 }
 
-function drawDonut(reguler, project, additional, total, rPct, pPct, aPct) {
+function drawDonut(reguler, project, additional, total) {
     const canvas = document.getElementById('donutChart');
     const ctx = canvas.getContext('2d');
-    const cx = canvas.width / 2, cy = canvas.height / 2;
-    const outerR = 120, innerR = 70;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = 100, cy = 100, outerR = 90, innerR = 55;
+    ctx.clearRect(0, 0, 200, 200);
 
     const segments = [
-        { value: reguler, color: '#c0392b', pct: rPct },
-        { value: project, color: '#27ae60', pct: pPct },
-        { value: additional, color: '#f39c12', pct: aPct }
+        { value: reguler, color: '#1B3A5C' },
+        { value: project, color: '#D4A017' },
+        { value: additional, color: '#2E86AB' }
     ].filter(s => s.value > 0);
 
     let startAngle = -Math.PI / 2;
     segments.forEach(seg => {
         const slice = (seg.value / total) * 2 * Math.PI;
-        const end = startAngle + slice;
         ctx.beginPath();
-        ctx.arc(cx, cy, outerR, startAngle, end);
-        ctx.arc(cx, cy, innerR, end, startAngle, true);
+        ctx.arc(cx, cy, outerR, startAngle, startAngle + slice);
+        ctx.arc(cx, cy, innerR, startAngle + slice, startAngle, true);
         ctx.closePath();
         ctx.fillStyle = seg.color;
         ctx.fill();
 
+        // Percentage label
         const mid = startAngle + slice / 2;
-        const lx = cx + Math.cos(mid) * ((outerR + innerR) / 2);
-        const ly = cy + Math.sin(mid) * ((outerR + innerR) / 2);
-        if (seg.pct >= 5) {
+        const pct = Math.round((seg.value / total) * 100);
+        if (pct >= 5) {
+            const lx = cx + Math.cos(mid) * ((outerR + innerR) / 2);
+            const ly = cy + Math.sin(mid) * ((outerR + innerR) / 2);
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 14px Poppins';
+            ctx.font = 'bold 12px Poppins';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(seg.pct + '%', lx, ly);
+            ctx.fillText(pct + '%', lx, ly);
         }
-        startAngle = end;
+        startAngle += slice;
     });
 
-    ctx.fillStyle = '#333';
-    ctx.font = '600 13px Poppins';
+    // Center text
+    ctx.fillStyle = '#1B3A5C';
+    ctx.font = 'bold 24px Poppins';
     ctx.textAlign = 'center';
-    ctx.fillText('TOTAL:', cx, cy - 12);
-    ctx.font = '900 32px Poppins';
-    ctx.fillText(total, cx, cy + 18);
-}
-
-function drawBarChart(divData) {
-    const canvas = document.getElementById('barChart');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const maxVal = Math.max(...divData.map(d => d.reguler + d.project + d.additional), 1);
-    // Round up max to nearest nice number for Y-axis
-    const niceMax = Math.ceil(maxVal / 2) * 2; // always even number
-    const leftPad = 35;
-    const barAreaWidth = canvas.width - leftPad - 10;
-    const barW = 55;
-    const gap = (barAreaWidth - barW * divData.length) / (divData.length + 1);
-    const chartH = 165;
-    const topPad = 25;
-    const bottomPad = 25;
-
-    // Draw Y-axis grid lines & labels (integers only)
-    const ySteps = Math.min(niceMax, 5);
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 1;
-    ctx.fillStyle = '#888';
-    ctx.font = '600 10px Poppins';
-    ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-
-    for (let i = 0; i <= ySteps; i++) {
-        const val = Math.round((niceMax / ySteps) * i);
-        const yPos = topPad + chartH - (val / niceMax) * chartH;
-        // Grid line
-        ctx.beginPath();
-        ctx.moveTo(leftPad, yPos);
-        ctx.lineTo(canvas.width - 10, yPos);
-        ctx.stroke();
-        // Label
-        ctx.fillText(val, leftPad - 5, yPos);
-    }
-
-    // Draw bars
-    ctx.textAlign = 'center';
-    divData.forEach((d, i) => {
-        const x = leftPad + gap + i * (barW + gap);
-        const totalAct = d.reguler + d.project + d.additional;
-        const totalH = (totalAct / niceMax) * chartH;
-        let y = topPad + chartH - totalH;
-
-        // Reguler bar
-        const rH = (d.reguler / niceMax) * chartH;
-        if (rH > 0) { ctx.fillStyle = '#c0392b'; ctx.fillRect(x, y, barW, rH); y += rH; }
-        // Project bar
-        const pH = (d.project / niceMax) * chartH;
-        if (pH > 0) { ctx.fillStyle = '#27ae60'; ctx.fillRect(x, y, barW, pH); y += pH; }
-        // Additional bar
-        const aH = (d.additional / niceMax) * chartH;
-        if (aH > 0) { ctx.fillStyle = '#f39c12'; ctx.fillRect(x, y, barW, aH); }
-
-        // Department name label
-        ctx.fillStyle = '#333';
-        ctx.font = '600 11px Poppins';
-        ctx.fillText(d.name, x + barW / 2, topPad + chartH + bottomPad - 8);
-
-        // Total value on top of bar
-        if (totalAct > 0) {
-            ctx.fillStyle = '#1a1a2e';
-            ctx.font = 'bold 12px Poppins';
-            ctx.fillText(totalAct, x + barW / 2, topPad + chartH - totalH - 8);
-        }
-    });
-}
-
-function renderKeyNotes() {
-    const raw = document.getElementById('key-notes-input').value.trim();
-    const list = document.getElementById('key-notes-list');
-    list.innerHTML = '';
-
-    if (!raw) {
-        list.innerHTML = '<li>No analysis notes provided.</li>';
-        return;
-    }
-
-    const lines = raw.split('\n').filter(l => l.trim());
-    lines.forEach(line => {
-        const li = document.createElement('li');
-        // Bold text before colon
-        const colonIdx = line.indexOf(':');
-        if (colonIdx > 0) {
-            li.innerHTML = `<strong>${line.substring(0, colonIdx + 1)}</strong>${line.substring(colonIdx + 1)}`;
-        } else {
-            li.textContent = line;
-        }
-        list.appendChild(li);
-    });
-}
-
-function generateDeptCards(divData) {
-    const container = document.getElementById('dept-cards');
-    container.innerHTML = '';
-
-    const tagColors = ['tag-yellow', 'tag-purple', 'tag-red', 'tag-blue', 'tag-green'];
-
-    divData.forEach((d, i) => {
-        if (d.activities.length === 0) return;
-        const card = document.createElement('div');
-        card.className = 'dept-card';
-
-        const label = d.cardLabel || d.name.toUpperCase();
-        const desc = d.cardDesc || `${d.activities.length} aktivitas hari ini`;
-        const tag = d.cardTag;
-        const tagClass = tagColors[i % tagColors.length];
-
-        card.innerHTML = `
-            <div class="dept-card-header" style="background:${d.bg}">
-                <span>${d.icon}</span>
-                <span>${d.name.toUpperCase()}</span>
-            </div>
-            <div class="dept-card-body">
-                <strong>${label}</strong>
-                <span class="dept-desc">Diringkas: ${desc}</span>
-                ${tag ? `<span class="dept-card-tag ${tagClass}">${tag}</span>` : ''}
-            </div>
-        `;
-        container.appendChild(card);
-    });
+    ctx.fillText(total, cx, cy - 5);
+    ctx.font = '600 10px Poppins';
+    ctx.fillText('Aktivitas', cx, cy + 14);
 }
 
 function goBack() {
@@ -263,181 +172,13 @@ function goBack() {
     document.getElementById('report-section').style.display = 'none';
 }
 
-
-// ===== PAGE 2: ACTIVITY LIST =====
-let cachedDivData = [];
-
-function generatePage2(divData, total, reguler, project, additional, regulerPct, projectPct, additionalPct, dateVal) {
-    cachedDivData = divData;
-
-    // Title
-    document.getElementById('report-title-p2').textContent = `DAILY ACTIVITY GA \u2013 ${formatDate(dateVal)}`;
-
-    // Activity Cards
-    const output = document.getElementById('activity-list-output');
-    output.innerHTML = '';
-
-    divData.forEach(d => {
-        if (d.activities.length === 0) return;
-        const card = document.createElement('div');
-        card.className = 'div-activity-card';
-
-        let listHtml = d.activities.map(a => {
-            const cls = a.category === 'REGULER' ? 'b-reguler' : a.category === 'PROJECT' ? 'b-project' : 'b-additional';
-            return `<li><span>\u2022 ${a.name}</span><span class="badge-p2 ${cls}">${a.category}</span></li>`;
-        }).join('');
-
-        card.innerHTML = `
-            <div class="div-activity-label" style="background:${d.bg}">
-                <span class="dv-icon">${d.icon}</span>
-                <span>${d.name}</span>
-            </div>
-            <div class="div-activity-content"><ul>${listHtml}</ul></div>
-        `;
-        output.appendChild(card);
+function saveReport(format) {
+    const el = document.getElementById('report-container');
+    html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f0f4f8' }).then(canvas => {
+        const link = document.createElement('a');
+        const dateVal = document.getElementById('activity-date').value;
+        link.download = `Daily_Activity_Report_${dateVal}.${format}`;
+        link.href = format === 'png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95);
+        link.click();
     });
-
-    // Stats
-    document.getElementById('p2-total').textContent = total;
-    document.getElementById('p2-reguler').textContent = reguler;
-    document.getElementById('p2-project').textContent = project;
-    document.getElementById('p2-additional').textContent = additional;
-    document.getElementById('p2-reguler-pct').textContent = `\u25CF ${regulerPct}%`;
-    document.getElementById('p2-project-pct').textContent = `\u25CF ${projectPct}%`;
-    document.getElementById('p2-additional-pct').textContent = `\u25CF ${additionalPct}%`;
-
-    // Pie Chart
-    drawPieP2(reguler, project, additional, total);
-}
-
-function drawPieP2(reguler, project, additional, total) {
-    const canvas = document.getElementById('pieChartP2');
-    const ctx = canvas.getContext('2d');
-    const cx = canvas.width / 2, cy = canvas.height / 2, r = 110;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const segs = [
-        { value: reguler, color: '#c0392b' },
-        { value: project, color: '#27ae60' },
-        { value: additional, color: '#f39c12' }
-    ].filter(s => s.value > 0);
-
-    let start = -Math.PI / 2;
-    segs.forEach(seg => {
-        const slice = (seg.value / total) * 2 * Math.PI;
-        const end = start + slice;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r, start, end);
-        ctx.closePath();
-        ctx.fillStyle = seg.color;
-        ctx.fill();
-
-        const mid = start + slice / 2;
-        const pct = Math.round((seg.value / total) * 100);
-        if (pct > 0) {
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 15px Poppins';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(pct + '%', cx + Math.cos(mid) * r * 0.6, cy + Math.sin(mid) * r * 0.6);
-        }
-        start = end;
-    });
-}
-
-// ===== PAGE SWITCHING =====
-let currentPage = 'page1';
-
-function switchPage(pageId) {
-    document.getElementById('page1').style.display = pageId === 'page1' ? 'block' : 'none';
-    document.getElementById('page2').style.display = pageId === 'page2' ? 'block' : 'none';
-    currentPage = pageId;
-
-    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-        btn.classList.toggle('active', (i === 0 && pageId === 'page1') || (i === 1 && pageId === 'page2'));
-    });
-}
-
-// ===== SAVE CURRENT PAGE =====
-function saveCurrentPage(btn, format) {
-    const containerId = currentPage === 'page1' ? 'report-container-page1' : 'report-container-page2';
-    const el = document.getElementById(containerId);
-    const orig = btn.innerHTML;
-    btn.innerHTML = '\u23F3 Menyimpan...';
-    btn.disabled = true;
-
-    // Disable animations temporarily so html2canvas captures final state
-    const style = document.createElement('style');
-    style.id = 'disable-animations';
-    style.textContent = '*, *::before, *::after { animation: none !important; transition: none !important; }';
-    document.head.appendChild(style);
-
-    // Convert all canvas elements to inline images for reliable capture
-    const canvasElements = el.querySelectorAll('canvas');
-    const replacements = [];
-
-    canvasElements.forEach(canvas => {
-        if (canvas.width > 0 && canvas.height > 0) {
-            const img = document.createElement('img');
-            img.src = canvas.toDataURL('image/png');
-            img.style.width = canvas.style.width || canvas.width + 'px';
-            img.style.height = canvas.style.height || canvas.height + 'px';
-            img.width = canvas.width;
-            img.height = canvas.height;
-            canvas.parentNode.insertBefore(img, canvas);
-            canvas.style.display = 'none';
-            replacements.push({ canvas, img });
-        }
-    });
-
-    // Small delay to let images render in DOM
-    setTimeout(() => {
-        html2canvas(el, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#dfe6ed',
-            logging: false,
-            scrollX: 0,
-            scrollY: -window.scrollY
-        }).then(captured => {
-            // Restore canvases
-            replacements.forEach(({ canvas, img }) => {
-                canvas.style.display = '';
-                img.parentNode.removeChild(img);
-            });
-            // Re-enable animations
-            const s = document.getElementById('disable-animations');
-            if (s) s.remove();
-
-            const link = document.createElement('a');
-            const suffix = currentPage === 'page1' ? '_Analysis' : '_ActivityList';
-            const fn = `GA_Daily_Activity_${document.getElementById('activity-date').value}${suffix}`;
-            if (format === 'png') {
-                link.download = fn + '.png';
-                link.href = captured.toDataURL('image/png');
-            } else {
-                link.download = fn + '.jpg';
-                link.href = captured.toDataURL('image/jpeg', 0.95);
-            }
-            link.click();
-            btn.innerHTML = orig;
-            btn.disabled = false;
-        }).catch(err => {
-            // Restore canvases on error too
-            replacements.forEach(({ canvas, img }) => {
-                canvas.style.display = '';
-                if (img.parentNode) img.parentNode.removeChild(img);
-            });
-            // Re-enable animations
-            const s = document.getElementById('disable-animations');
-            if (s) s.remove();
-
-            alert('Gagal menyimpan. Coba lagi.');
-            console.error(err);
-            btn.innerHTML = orig;
-            btn.disabled = false;
-        });
-    }, 100);
 }
