@@ -16,11 +16,11 @@ function removeRow(btn) {
 }
 
 const divisions = [
-    { id: 'nrm-activities', name: 'NRM', icon: '🪣' },
-    { id: 'cs-activities', name: 'CLEANING SERVICE', icon: '🪣' },
-    { id: 'ts-activities', name: 'TECHNICAL SUPPORT / WORKSHOP', icon: '🔧' },
-    { id: 'utility-activities', name: 'UTILITY', icon: '🏗️' },
-    { id: 'ga-activities', name: 'GA Internal', icon: '📋' }
+    { id: 'nrm-activities', name: 'NRM', icon: '🪣', bg: 'bg-nrm' },
+    { id: 'cs-activities', name: 'CLEANING SERVICE', icon: '🧹', bg: 'bg-cs' },
+    { id: 'ts-activities', name: 'TECHNICAL SUPPORT / WORKSHOP', icon: '🔧', bg: 'bg-ts' },
+    { id: 'utility-activities', name: 'UTILITY', icon: '🏗️', bg: 'bg-utility' },
+    { id: 'ga-activities', name: 'GA Internal', icon: '📋', bg: 'bg-ga' }
 ];
 
 function formatDateID(dateStr) {
@@ -74,7 +74,7 @@ function generateReport() {
             const cls = a.category === 'REGULER' ? 'badge-reguler' : a.category === 'PROJECT' ? 'badge-project' : 'badge-additional';
             return `<li><span>• ${a.name}</span><span class="badge ${cls}">${a.category}</span></li>`;
         }).join('');
-        card.innerHTML = `<div class="div-label"><span class="div-icon">${d.icon}</span><span class="div-name">${d.name}</span></div><div class="div-content"><ul>${listHtml}</ul></div>`;
+        card.innerHTML = `<div class="div-label ${d.bg}"><span class="div-icon">${d.icon}</span><span class="div-name">${d.name}</span></div><div class="div-content"><ul>${listHtml}</ul></div>`;
         output.appendChild(card);
     });
 
@@ -123,13 +123,13 @@ function generateReport() {
 function drawDonut(reguler, project, additional, total) {
     const canvas = document.getElementById('donutChart');
     const ctx = canvas.getContext('2d');
-    const cx = 100, cy = 100, outerR = 90, innerR = 55;
-    ctx.clearRect(0, 0, 200, 200);
+    const cx = 110, cy = 110, outerR = 100, innerR = 62;
+    ctx.clearRect(0, 0, 220, 220);
 
     const segments = [
         { value: reguler, color: '#1B3A5C' },
         { value: project, color: '#D4A017' },
-        { value: additional, color: '#2E86AB' }
+        { value: additional, color: '#17a589' }
     ].filter(s => s.value > 0);
 
     let startAngle = -Math.PI / 2;
@@ -149,7 +149,7 @@ function drawDonut(reguler, project, additional, total) {
             const lx = cx + Math.cos(mid) * ((outerR + innerR) / 2);
             const ly = cy + Math.sin(mid) * ((outerR + innerR) / 2);
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 12px Poppins';
+            ctx.font = 'bold 13px Poppins';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(pct + '%', lx, ly);
@@ -159,12 +159,13 @@ function drawDonut(reguler, project, additional, total) {
 
     // Center text
     ctx.fillStyle = '#1B3A5C';
-    ctx.font = 'bold 24px Poppins';
+    ctx.font = 'bold 28px Poppins';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(total, cx, cy - 5);
-    ctx.font = '600 10px Poppins';
-    ctx.fillText('Aktivitas', cx, cy + 14);
+    ctx.fillText(total, cx, cy - 6);
+    ctx.font = '600 11px Poppins';
+    ctx.fillStyle = '#555';
+    ctx.fillText('Aktivitas', cx, cy + 16);
 }
 
 function goBack() {
