@@ -134,43 +134,81 @@
                         </div>
                     </div>
                     <div class="banner-illustration">
-                        <svg width="160" height="130" viewBox="0 0 180 150">
-                            <rect x="20" y="110" width="140" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
-                            <rect x="35" y="116" width="6" height="25" fill="rgba(255,255,255,0.2)"/>
-                            <rect x="139" y="116" width="6" height="25" fill="rgba(255,255,255,0.2)"/>
-                            <rect x="55" y="65" width="60" height="42" rx="4" fill="rgba(255,255,255,0.9)"/>
-                            <rect x="59" y="69" width="52" height="34" rx="2" fill="#E8F4FD"/>
-                            <rect x="80" y="107" width="10" height="6" fill="rgba(255,255,255,0.5)"/>
-                            <rect x="72" y="111" width="26" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
-                            <rect x="64" y="75" width="30" height="3" rx="1" fill="#1B3A5C" opacity="0.4" class="screen-line line1"/>
-                            <rect x="64" y="81" width="42" height="3" rx="1" fill="#D4A017" opacity="0.6" class="screen-line line2"/>
-                            <rect x="64" y="87" width="35" height="3" rx="1" fill="#2E86AB" opacity="0.5" class="screen-line line3"/>
-                            <rect x="64" y="93" width="25" height="3" rx="1" fill="#1B3A5C" opacity="0.3" class="screen-line line4"/>
-                            <circle cx="42" cy="52" r="14" fill="#F5CBA7"/>
-                            <path d="M28 48 Q30 35 42 33 Q54 35 56 48" fill="#2c3e50"/>
-                            <circle cx="37" cy="53" r="4" fill="none" stroke="#2c3e50" stroke-width="1.5"/>
-                            <circle cx="47" cy="53" r="4" fill="none" stroke="#2c3e50" stroke-width="1.5"/>
-                            <line x1="41" y1="53" x2="43" y2="53" stroke="#2c3e50" stroke-width="1"/>
-                            <path d="M38 58 Q42 61 46 58" fill="none" stroke="#2c3e50" stroke-width="1" stroke-linecap="round"/>
-                            <path d="M32 66 Q42 64 52 66 L54 110 L30 110 Z" fill="#fff"/>
-                            <polygon points="42,66 44,78 42,80 40,78" fill="#D4A017"/>
-                            <path d="M30 75 Q20 85 28 100 L55 100" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round"/>
-                            <path d="M52 75 Q62 85 58 100 L55 105" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round"/>
-                            <rect x="130" y="96" width="14" height="14" rx="2" fill="#D4A017"/>
-                            <path d="M144 99 Q150 99 150 106 Q150 110 144 110" fill="none" stroke="#D4A017" stroke-width="2"/>
-                            <path d="M134 93 Q136 88 134 83" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-linecap="round" class="steam steam1"/>
-                            <path d="M138 93 Q140 87 138 81" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-linecap="round" class="steam steam2"/>
+                        <svg width="180" height="140" viewBox="0 0 200 160">
+                            <!-- Shadow under desk -->
+                            <ellipse cx="100" cy="145" rx="70" ry="6" fill="rgba(0,0,0,0.2)"/>
+                            <!-- Desk -->
+                            <rect x="25" y="118" width="150" height="8" rx="4" fill="#D4A017"/>
+                            <rect x="25" y="118" width="150" height="4" rx="2" fill="#f0c040"/>
+                            <rect x="40" y="126" width="8" height="22" rx="2" fill="#b8860b"/>
+                            <rect x="152" y="126" width="8" height="22" rx="2" fill="#b8860b"/>
+                            <!-- Monitor shadow -->
+                            <rect x="62" y="70" width="68" height="48" rx="6" fill="rgba(0,0,0,0.3)" transform="translate(3,3)"/>
+                            <!-- Monitor -->
+                            <rect x="60" y="68" width="68" height="48" rx="6" fill="#2c3e50"/>
+                            <rect x="60" y="68" width="68" height="5" rx="6" fill="#3d566e"/>
+                            <rect x="64" y="76" width="60" height="36" rx="3" fill="#e8f4fd"/>
+                            <!-- Screen glow -->
+                            <rect x="64" y="76" width="60" height="36" rx="3" fill="url(#screenGlow)" opacity="0.3"/>
+                            <defs><linearGradient id="screenGlow" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#a8d8ea"/></linearGradient></defs>
+                            <!-- Screen content -->
+                            <rect x="70" y="82" width="32" height="3" rx="1.5" fill="#1B3A5C" opacity="0.5" class="screen-line line1"/>
+                            <rect x="70" y="88" width="48" height="3" rx="1.5" fill="#D4A017" opacity="0.6" class="screen-line line2"/>
+                            <rect x="70" y="94" width="38" height="3" rx="1.5" fill="#17a589" opacity="0.5" class="screen-line line3"/>
+                            <rect x="70" y="100" width="28" height="3" rx="1.5" fill="#1B3A5C" opacity="0.4" class="screen-line line4"/>
+                            <!-- Monitor stand -->
+                            <rect x="88" y="116" width="12" height="6" rx="2" fill="#3d566e"/>
+                            <rect x="80" y="120" width="28" height="4" rx="2" fill="#2c3e50"/>
+                            <!-- Person shadow -->
+                            <ellipse cx="44" cy="140" rx="18" ry="4" fill="rgba(0,0,0,0.15)"/>
+                            <!-- Person body -->
+                            <path d="M32 72 Q44 69 56 72 L58 118 L30 118 Z" fill="#fff"/>
+                            <path d="M32 72 Q44 69 56 72 L56 76 Q44 73 32 76 Z" fill="#e8e8e8"/>
+                            <!-- Tie -->
+                            <polygon points="44,72 46.5,86 44,89 41.5,86" fill="#D4A017"/>
+                            <polygon points="44,72 46.5,86 44,84" fill="#b8860b"/>
+                            <!-- Person head -->
+                            <circle cx="44" cy="54" r="16" fill="#F5CBA7"/>
+                            <circle cx="44" cy="54" r="16" fill="url(#faceGrad)" opacity="0.3"/>
+                            <defs><radialGradient id="faceGrad"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#e8a87c"/></radialGradient></defs>
+                            <!-- Hair -->
+                            <path d="M28 49 Q30 34 44 32 Q58 34 60 49 L58 45 Q56 38 44 36 Q32 38 30 45 Z" fill="#1a1a2e"/>
+                            <!-- Glasses -->
+                            <rect x="34" y="50" width="9" height="7" rx="3" fill="none" stroke="#1a1a2e" stroke-width="1.8"/>
+                            <rect x="46" y="50" width="9" height="7" rx="3" fill="none" stroke="#1a1a2e" stroke-width="1.8"/>
+                            <line x1="43" y1="53" x2="46" y2="53" stroke="#1a1a2e" stroke-width="1.2"/>
+                            <rect x="35" y="51" width="7" height="5" rx="2" fill="rgba(200,230,255,0.3)"/>
+                            <rect x="47" y="51" width="7" height="5" rx="2" fill="rgba(200,230,255,0.3)"/>
+                            <!-- Smile -->
+                            <path d="M40 61 Q44 64 48 61" fill="none" stroke="#c0392b" stroke-width="1.2" stroke-linecap="round"/>
+                            <!-- Arms -->
+                            <path d="M30 80 Q22 92 30 108 L56 108" fill="none" stroke="#F5CBA7" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M56 80 Q64 92 60 108" fill="none" stroke="#F5CBA7" stroke-width="5" stroke-linecap="round"/>
+                            <!-- Coffee mug shadow -->
+                            <ellipse cx="155" cy="118" rx="10" ry="3" fill="rgba(0,0,0,0.1)"/>
+                            <!-- Coffee mug -->
+                            <rect x="145" y="100" width="18" height="18" rx="3" fill="#D4A017"/>
+                            <rect x="145" y="100" width="18" height="6" rx="3" fill="#f0c040"/>
+                            <path d="M163 104 Q170 104 170 111 Q170 116 163 116" fill="none" stroke="#b8860b" stroke-width="2.5" stroke-linecap="round"/>
+                            <!-- Steam -->
+                            <path d="M151 97 Q153 91 151 85" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" class="steam steam1"/>
+                            <path d="M156 97 Q158 90 156 83" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" class="steam steam2"/>
+                            <!-- Floating document -->
                             <g class="floating-doc">
-                                <rect x="135" y="40" width="22" height="28" rx="2" fill="#fff" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
-                                <rect x="139" y="46" width="14" height="2" rx="1" fill="#1B3A5C" opacity="0.5"/>
-                                <rect x="139" y="51" width="10" height="2" rx="1" fill="#D4A017" opacity="0.7"/>
-                                <rect x="139" y="56" width="14" height="2" rx="1" fill="#2E86AB" opacity="0.5"/>
+                                <rect x="148" y="38" width="26" height="32" rx="3" fill="rgba(0,0,0,0.1)" transform="translate(2,2)"/>
+                                <rect x="148" y="38" width="26" height="32" rx="3" fill="#fff"/>
+                                <rect x="148" y="38" width="26" height="8" rx="3" fill="#1B3A5C"/>
+                                <rect x="152" y="50" width="18" height="2.5" rx="1" fill="#ddd"/>
+                                <rect x="152" y="55" width="14" height="2.5" rx="1" fill="#D4A017"/>
+                                <rect x="152" y="60" width="18" height="2.5" rx="1" fill="#ddd"/>
                             </g>
+                            <!-- Floating chart -->
                             <g class="floating-chart">
-                                <rect x="120" y="25" width="20" height="18" rx="2" fill="rgba(255,255,255,0.9)"/>
-                                <rect x="123" y="35" width="4" height="5" fill="#1B3A5C"/>
-                                <rect x="128" y="31" width="4" height="9" fill="#2E86AB"/>
-                                <rect x="133" y="28" width="4" height="12" fill="#D4A017"/>
+                                <rect x="140" y="18" width="26" height="22" rx="3" fill="rgba(0,0,0,0.1)" transform="translate(2,2)"/>
+                                <rect x="140" y="18" width="26" height="22" rx="3" fill="#fff"/>
+                                <rect x="144" y="30" width="5" height="7" rx="1" fill="#1B3A5C"/>
+                                <rect x="151" y="26" width="5" height="11" rx="1" fill="#17a589"/>
+                                <rect x="158" y="22" width="5" height="15" rx="1" fill="#D4A017"/>
                             </g>
                         </svg>
                     </div>
