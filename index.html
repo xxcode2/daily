@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Activity Report - HRD-GA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -25,105 +25,72 @@
         </div>
     </div>
 
-    <!-- Division Forms -->
-    <div class="division-form" data-div="nrm">
-        <div class="division-header nrm-bg">
-            <span class="division-icon">🪣</span> NRM
-        </div>
+    <div class="division-form">
+        <div class="division-header nrm-bg"><span class="division-icon">🪣</span> NRM</div>
         <div class="activity-list" id="nrm-activities">
             <div class="activity-row">
                 <input type="text" class="activity-input" placeholder="Aktivitas...">
-                <select class="category-select">
-                    <option value="REGULER">REGULER</option>
-                    <option value="PROJECT">PROJECT</option>
-                    <option value="ADDITIONAL">ADDITIONAL</option>
-                </select>
+                <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                 <button class="btn-remove" onclick="removeRow(this)">✕</button>
             </div>
         </div>
         <button class="btn-add" onclick="addRow('nrm-activities')">+ Tambah Aktivitas</button>
     </div>
 
-    <div class="division-form" data-div="cs">
-        <div class="division-header cs-bg">
-            <span class="division-icon">🪣</span> CLEANING SERVICE
-        </div>
+    <div class="division-form">
+        <div class="division-header cs-bg"><span class="division-icon">🧹</span> CLEANING SERVICE</div>
         <div class="activity-list" id="cs-activities">
             <div class="activity-row">
                 <input type="text" class="activity-input" placeholder="Aktivitas...">
-                <select class="category-select">
-                    <option value="REGULER">REGULER</option>
-                    <option value="PROJECT">PROJECT</option>
-                    <option value="ADDITIONAL">ADDITIONAL</option>
-                </select>
+                <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                 <button class="btn-remove" onclick="removeRow(this)">✕</button>
             </div>
         </div>
         <button class="btn-add" onclick="addRow('cs-activities')">+ Tambah Aktivitas</button>
     </div>
 
-    <div class="division-form" data-div="ts">
-        <div class="division-header ts-bg">
-            <span class="division-icon">🔧</span> TECHNICAL SUPPORT / WORKSHOP
-        </div>
+    <div class="division-form">
+        <div class="division-header ts-bg"><span class="division-icon">🔧</span> TECHNICAL SUPPORT / WORKSHOP</div>
         <div class="activity-list" id="ts-activities">
             <div class="activity-row">
                 <input type="text" class="activity-input" placeholder="Aktivitas...">
-                <select class="category-select">
-                    <option value="REGULER">REGULER</option>
-                    <option value="PROJECT">PROJECT</option>
-                    <option value="ADDITIONAL">ADDITIONAL</option>
-                </select>
+                <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                 <button class="btn-remove" onclick="removeRow(this)">✕</button>
             </div>
         </div>
         <button class="btn-add" onclick="addRow('ts-activities')">+ Tambah Aktivitas</button>
     </div>
 
-    <div class="division-form" data-div="utility">
-        <div class="division-header utility-bg">
-            <span class="division-icon">🏗️</span> UTILITY
-        </div>
+    <div class="division-form">
+        <div class="division-header utility-bg"><span class="division-icon">🏗️</span> UTILITY</div>
         <div class="activity-list" id="utility-activities">
             <div class="activity-row">
                 <input type="text" class="activity-input" placeholder="Aktivitas...">
-                <select class="category-select">
-                    <option value="REGULER">REGULER</option>
-                    <option value="PROJECT">PROJECT</option>
-                    <option value="ADDITIONAL">ADDITIONAL</option>
-                </select>
+                <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                 <button class="btn-remove" onclick="removeRow(this)">✕</button>
             </div>
         </div>
         <button class="btn-add" onclick="addRow('utility-activities')">+ Tambah Aktivitas</button>
     </div>
 
-    <div class="division-form" data-div="ga">
-        <div class="division-header ga-bg">
-            <span class="division-icon">📋</span> GA Internal
-        </div>
+    <div class="division-form">
+        <div class="division-header ga-bg"><span class="division-icon">📋</span> GA Internal</div>
         <div class="activity-list" id="ga-activities">
             <div class="activity-row">
                 <input type="text" class="activity-input" placeholder="Aktivitas...">
-                <select class="category-select">
-                    <option value="REGULER">REGULER</option>
-                    <option value="PROJECT">PROJECT</option>
-                    <option value="ADDITIONAL">ADDITIONAL</option>
-                </select>
+                <select class="category-select"><option value="REGULER">REGULER</option><option value="PROJECT">PROJECT</option><option value="ADDITIONAL">ADDITIONAL</option></select>
                 <button class="btn-remove" onclick="removeRow(this)">✕</button>
             </div>
         </div>
         <button class="btn-add" onclick="addRow('ga-activities')">+ Tambah Aktivitas</button>
     </div>
 
-    <!-- Key Achievement Input -->
     <div class="notes-form">
         <h3>🏆 Key Achievement (3 poin)</h3>
         <p class="notes-hint">Tulis 3 pencapaian utama hari ini, pisahkan dengan baris baru.</p>
         <textarea id="key-achievement-input" rows="4" placeholder="Seluruh kegiatan berjalan sesuai rencana...&#10;Dukungan antar tim optimal...&#10;Progres project berjalan sesuai target..."></textarea>
     </div>
 
-    <!-- Next Action Input -->
     <div class="notes-form">
         <h3>🎯 Next Action</h3>
         <p class="notes-hint">Tulis rencana tindak lanjut, pisahkan dengan baris baru.</p>
@@ -143,124 +110,118 @@
 
     <div class="report-wrapper">
         <div class="report-container" id="report-container">
-            <!-- Header -->
-            <div class="report-header">
-                <div class="header-left">
-                    <h1 id="report-title">DAILY ACTIVITY REPORT – HRD-GA</h1>
-                    <div class="report-meta">
-                        <span class="meta-item">📅 Date : <strong id="report-date">18 Mei 2026</strong></span>
-                        <span class="meta-item">👤 PIC : <strong id="report-pic">Ari Rafiar</strong></span>
+            <!-- Decorative corners -->
+            <div class="corner-decor-tl"></div>
+            <div class="corner-decor-br"></div>
+
+            <!-- TOP GRADIENT BANNER -->
+            <div class="report-top-banner">
+                <div class="banner-content">
+                    <div class="banner-left">
+                        <h1 id="report-title">DAILY ACTIVITY REPORT – HRD-GA</h1>
+                        <div class="banner-meta">
+                            <div class="meta-item">
+                                <span class="meta-icon">📅</span>
+                                <span>Date : <strong id="report-date">18 Mei 2026</strong></span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">👤</span>
+                                <span>PIC : <strong id="report-pic">Ari Rafiar</strong></span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="header-illustration">
-                    <svg width="180" height="150" viewBox="0 0 180 150">
-                        <!-- Desk -->
-                        <rect x="20" y="110" width="140" height="6" rx="3" fill="#1B3A5C"/>
-                        <rect x="35" y="116" width="6" height="30" fill="#1B3A5C"/>
-                        <rect x="139" y="116" width="6" height="30" fill="#1B3A5C"/>
-                        <!-- Monitor -->
-                        <rect x="55" y="65" width="60" height="42" rx="4" fill="#1B3A5C"/>
-                        <rect x="59" y="69" width="52" height="34" rx="2" fill="#E8F4FD"/>
-                        <!-- Monitor stand -->
-                        <rect x="80" y="107" width="10" height="6" fill="#1B3A5C"/>
-                        <rect x="72" y="111" width="26" height="3" rx="1" fill="#1B3A5C"/>
-                        <!-- Screen content lines (animated) -->
-                        <rect x="64" y="75" width="30" height="3" rx="1" fill="#1B3A5C" opacity="0.4" class="screen-line line1"/>
-                        <rect x="64" y="81" width="42" height="3" rx="1" fill="#D4A017" opacity="0.6" class="screen-line line2"/>
-                        <rect x="64" y="87" width="35" height="3" rx="1" fill="#2E86AB" opacity="0.5" class="screen-line line3"/>
-                        <rect x="64" y="93" width="25" height="3" rx="1" fill="#1B3A5C" opacity="0.3" class="screen-line line4"/>
-                        <!-- Person head -->
-                        <circle cx="42" cy="52" r="14" fill="#F5CBA7"/>
-                        <!-- Hair -->
-                        <path d="M28 48 Q30 35 42 33 Q54 35 56 48" fill="#1B3A5C"/>
-                        <!-- Glasses -->
-                        <circle cx="37" cy="53" r="4" fill="none" stroke="#1B3A5C" stroke-width="1.5"/>
-                        <circle cx="47" cy="53" r="4" fill="none" stroke="#1B3A5C" stroke-width="1.5"/>
-                        <line x1="41" y1="53" x2="43" y2="53" stroke="#1B3A5C" stroke-width="1"/>
-                        <!-- Smile -->
-                        <path d="M38 58 Q42 61 46 58" fill="none" stroke="#1B3A5C" stroke-width="1" stroke-linecap="round"/>
-                        <!-- Body -->
-                        <path d="M32 66 Q42 64 52 66 L54 110 L30 110 Z" fill="#fff" stroke="#1B3A5C" stroke-width="1.5"/>
-                        <!-- Tie -->
-                        <polygon points="42,66 44,78 42,80 40,78" fill="#D4A017"/>
-                        <!-- Arms -->
-                        <path d="M30 75 Q20 85 28 100 L55 100" fill="none" stroke="#1B3A5C" stroke-width="3" stroke-linecap="round" class="arm-left"/>
-                        <path d="M52 75 Q62 85 58 100 L55 105" fill="none" stroke="#1B3A5C" stroke-width="3" stroke-linecap="round" class="arm-right"/>
-                        <!-- Coffee mug -->
-                        <rect x="130" y="96" width="14" height="14" rx="2" fill="#D4A017"/>
-                        <path d="M144 99 Q150 99 150 106 Q150 110 144 110" fill="none" stroke="#D4A017" stroke-width="2"/>
-                        <!-- Steam (animated) -->
-                        <path d="M134 93 Q136 88 134 83" fill="none" stroke="#999" stroke-width="1" stroke-linecap="round" class="steam steam1"/>
-                        <path d="M138 93 Q140 87 138 81" fill="none" stroke="#999" stroke-width="1" stroke-linecap="round" class="steam steam2"/>
-                        <!-- Floating document (animated) -->
-                        <g class="floating-doc">
-                            <rect x="135" y="40" width="22" height="28" rx="2" fill="#fff" stroke="#1B3A5C" stroke-width="1.5"/>
-                            <rect x="139" y="46" width="14" height="2" rx="1" fill="#1B3A5C" opacity="0.5"/>
-                            <rect x="139" y="51" width="10" height="2" rx="1" fill="#D4A017" opacity="0.7"/>
-                            <rect x="139" y="56" width="14" height="2" rx="1" fill="#2E86AB" opacity="0.5"/>
-                            <rect x="139" y="61" width="8" height="2" rx="1" fill="#1B3A5C" opacity="0.3"/>
-                        </g>
-                        <!-- Chart icon (animated) -->
-                        <g class="floating-chart">
-                            <rect x="120" y="25" width="20" height="18" rx="2" fill="#2E86AB" opacity="0.9"/>
-                            <rect x="123" y="35" width="4" height="5" fill="#fff"/>
-                            <rect x="128" y="31" width="4" height="9" fill="#fff"/>
-                            <rect x="133" y="28" width="4" height="12" fill="#D4A017"/>
-                        </g>
-                    </svg>
+                    <div class="banner-illustration">
+                        <svg width="160" height="130" viewBox="0 0 180 150">
+                            <rect x="20" y="110" width="140" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
+                            <rect x="35" y="116" width="6" height="25" fill="rgba(255,255,255,0.2)"/>
+                            <rect x="139" y="116" width="6" height="25" fill="rgba(255,255,255,0.2)"/>
+                            <rect x="55" y="65" width="60" height="42" rx="4" fill="rgba(255,255,255,0.9)"/>
+                            <rect x="59" y="69" width="52" height="34" rx="2" fill="#E8F4FD"/>
+                            <rect x="80" y="107" width="10" height="6" fill="rgba(255,255,255,0.5)"/>
+                            <rect x="72" y="111" width="26" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
+                            <rect x="64" y="75" width="30" height="3" rx="1" fill="#1B3A5C" opacity="0.4" class="screen-line line1"/>
+                            <rect x="64" y="81" width="42" height="3" rx="1" fill="#D4A017" opacity="0.6" class="screen-line line2"/>
+                            <rect x="64" y="87" width="35" height="3" rx="1" fill="#2E86AB" opacity="0.5" class="screen-line line3"/>
+                            <rect x="64" y="93" width="25" height="3" rx="1" fill="#1B3A5C" opacity="0.3" class="screen-line line4"/>
+                            <circle cx="42" cy="52" r="14" fill="#F5CBA7"/>
+                            <path d="M28 48 Q30 35 42 33 Q54 35 56 48" fill="#2c3e50"/>
+                            <circle cx="37" cy="53" r="4" fill="none" stroke="#2c3e50" stroke-width="1.5"/>
+                            <circle cx="47" cy="53" r="4" fill="none" stroke="#2c3e50" stroke-width="1.5"/>
+                            <line x1="41" y1="53" x2="43" y2="53" stroke="#2c3e50" stroke-width="1"/>
+                            <path d="M38 58 Q42 61 46 58" fill="none" stroke="#2c3e50" stroke-width="1" stroke-linecap="round"/>
+                            <path d="M32 66 Q42 64 52 66 L54 110 L30 110 Z" fill="#fff"/>
+                            <polygon points="42,66 44,78 42,80 40,78" fill="#D4A017"/>
+                            <path d="M30 75 Q20 85 28 100 L55 100" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M52 75 Q62 85 58 100 L55 105" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round"/>
+                            <rect x="130" y="96" width="14" height="14" rx="2" fill="#D4A017"/>
+                            <path d="M144 99 Q150 99 150 106 Q150 110 144 110" fill="none" stroke="#D4A017" stroke-width="2"/>
+                            <path d="M134 93 Q136 88 134 83" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-linecap="round" class="steam steam1"/>
+                            <path d="M138 93 Q140 87 138 81" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-linecap="round" class="steam steam2"/>
+                            <g class="floating-doc">
+                                <rect x="135" y="40" width="22" height="28" rx="2" fill="#fff" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+                                <rect x="139" y="46" width="14" height="2" rx="1" fill="#1B3A5C" opacity="0.5"/>
+                                <rect x="139" y="51" width="10" height="2" rx="1" fill="#D4A017" opacity="0.7"/>
+                                <rect x="139" y="56" width="14" height="2" rx="1" fill="#2E86AB" opacity="0.5"/>
+                            </g>
+                            <g class="floating-chart">
+                                <rect x="120" y="25" width="20" height="18" rx="2" fill="rgba(255,255,255,0.9)"/>
+                                <rect x="123" y="35" width="4" height="5" fill="#1B3A5C"/>
+                                <rect x="128" y="31" width="4" height="9" fill="#2E86AB"/>
+                                <rect x="133" y="28" width="4" height="12" fill="#D4A017"/>
+                            </g>
+                        </svg>
+                    </div>
                 </div>
             </div>
 
-            <!-- Main Body: Two Columns -->
-            <div class="report-body">
-                <!-- LEFT COLUMN: Activity List per Division -->
-                <div class="col-left">
-                    <div id="division-activities-output"></div>
-                </div>
-
-                <!-- RIGHT COLUMN: Key Achievement, Donut, Highlight, Next Action -->
-                <div class="col-right">
-                    <!-- Key Achievement -->
-                    <div class="card card-achievement">
-                        <div class="card-title"><span class="card-icon">✅</span> KEY ACHIEVEMENT</div>
-                        <div class="achievement-grid" id="achievement-grid"></div>
+            <!-- BODY -->
+            <div class="report-body-wrapper">
+                <div class="report-body">
+                    <!-- LEFT COLUMN -->
+                    <div class="col-left">
+                        <div class="division-list-wrapper" id="division-activities-output"></div>
                     </div>
 
-                    <!-- Donut Chart: Aktivitas Hari Ini -->
-                    <div class="card card-donut">
-                        <div class="card-title"><span class="card-icon">📊</span> AKTIVITAS HARI INI – KOMPOSISI</div>
-                        <div class="donut-wrapper">
-                            <canvas id="donutChart" width="200" height="200"></canvas>
-                            <div class="donut-legend" id="donut-legend"></div>
+                    <!-- RIGHT COLUMN -->
+                    <div class="col-right">
+                        <div class="card card-achievement">
+                            <div class="card-title"><span class="card-icon">✅</span> KEY ACHIEVEMENT</div>
+                            <div class="achievement-grid" id="achievement-grid"></div>
                         </div>
-                    </div>
 
-                    <!-- Additional Activity Highlight -->
-                    <div class="card card-highlight">
-                        <div class="highlight-row">
-                            <span class="highlight-icon">⚙️</span>
-                            <div class="highlight-text">
-                                <strong>ADDITIONAL ACTIVITY HIGHLIGHT</strong>
-                                <p>Berbagai kegiatan pendukung yang memastikan kelancaran operasional dan maintenance harian.</p>
+                        <div class="card card-donut">
+                            <div class="card-title"><span class="card-icon">📊</span> AKTIVITAS HARI INI – KOMPOSISI</div>
+                            <div class="donut-wrapper">
+                                <canvas id="donutChart" width="200" height="200"></canvas>
+                                <div class="donut-legend" id="donut-legend"></div>
                             </div>
-                            <div class="highlight-badge" id="highlight-badge">8 AKTIVITAS ✓</div>
                         </div>
-                    </div>
 
-                    <!-- Next Action -->
-                    <div class="card card-next">
-                        <div class="card-title"><span class="card-icon">🎯</span> NEXT ACTION</div>
-                        <div class="next-body">
-                            <ul id="next-action-list"></ul>
-                            <div class="next-meta">
-                                <div class="meta-box">
-                                    <small>Tanggal Laporan:</small>
-                                    <strong id="meta-report-day">Senin,</strong>
-                                    <span id="meta-report-date">18 Mei 2026</span>
+                        <div class="card card-highlight">
+                            <div class="highlight-row">
+                                <span class="highlight-icon">⚙️</span>
+                                <div class="highlight-text">
+                                    <strong>ADDITIONAL ACTIVITY HIGHLIGHT</strong>
+                                    <p>Berbagai kegiatan pendukung yang memastikan kelancaran operasional dan maintenance harian.</p>
                                 </div>
-                                <div class="meta-box">
-                                    <small>Disiapkan oleh:</small>
-                                    <strong>GA TEAM</strong>
+                                <div class="highlight-badge" id="highlight-badge">8 AKTIVITAS ✓</div>
+                            </div>
+                        </div>
+
+                        <div class="card card-next">
+                            <div class="card-title"><span class="card-icon">🎯</span> NEXT ACTION</div>
+                            <div class="next-body">
+                                <ul id="next-action-list"></ul>
+                                <div class="next-meta">
+                                    <div class="meta-box">
+                                        <small>Tanggal Laporan:</small>
+                                        <strong id="meta-report-day">Senin,</strong>
+                                        <span id="meta-report-date">18 Mei 2026</span>
+                                    </div>
+                                    <div class="meta-box">
+                                        <small>Disiapkan oleh:</small>
+                                        <strong>GA TEAM</strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
